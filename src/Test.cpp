@@ -1,9 +1,9 @@
-#include "cute.h"
+/*#include "cute.h"
 #include "ide_listener.h"
 #include "xml_listener.h"
-#include "cute_runner.h"
+#include "cute_runner.h"*/
 
-
+#include "Graph.h"
 #include <cstdio>
 #include "graphviewer.h"
 #include <fstream>
@@ -11,32 +11,62 @@
 #include <sstream>
 
 
-void thisIsATest() {
-	ASSERTM("start writing tests", false);	
+
+Graph<int> createGraph1() {
+	Graph<int> myGraph;
+
+	for(int i = 1; i < 7; i++)
+		myGraph.addVertex(i);
+
+	myGraph.addEdge(1, 2, 3);
+	myGraph.addEdge(1, 3, 2);
+	myGraph.addEdge(2, 5, 4);
+	myGraph.addEdge(2, 4, 3);
+	myGraph.addEdge(2, 3, 1);
+	myGraph.addEdge(3, 5, 2);
+	myGraph.addEdge(4, 6, 2);
+	myGraph.addEdge(5, 6, 3);
+
+	return myGraph;
 }
 
-bool runAllTests(int argc, char const *argv[]) {
-	cute::suite s { };
-	//TODO add your test here
-	s.push_back(CUTE(thisIsATest));
-	cute::xml_file_opener xmlfile(argc, argv);
-	cute::xml_listener<cute::ide_listener<>> lis(xmlfile.out);
-	auto runner = cute::makeRunner(lis, argc, argv);
-	bool success = runner(s, "AllTests");
-	return success;
-}
-
-int main(int argc, char const *argv[]) {
-    //return runAllTests(argc, argv) ? EXIT_SUCCESS : EXIT_FAILURE;
+template<class T>
+GraphViewer * generateGraphViewer(Graph<T> &graph){
 
 	GraphViewer *gv = new GraphViewer(600, 600, true);
 	gv->createWindow(600, 600);
+
 	gv->defineVertexColor("blue");
 	gv->defineEdgeColor("black");
-	gv->addNode(1);
-	gv->addNode(2);
-	gv->addEdge(1,1,2,EdgeType::UNDIRECTED);
+
+	vector<Vertex <T> *> v = graph.getVertexSet();
+
+	for(unsigned int i = 0; i<v.size();i++){
+		gv->addNode(v[i]->getNodeId());
+	}
+
+	for(unsigned int i = 0; i<v.size();i++){
+		vector<Edge<T>> t = v[i]->getEdges();
+		for(unsigned int a = 0; a< t.size();a++){
+			gv->addEdge(t[a].getEdgeId() , t[a].orig->getNodeId() , t[a].dest->getNodeId() ,  EdgeType::DIRECTED);
+			gv->setEdgeLabel(t[a].getEdgeId(),to_string(t[a].getWeight()));
+		}
+	}
+
+
 	gv->rearrange();
+	return gv;
+}
+
+int main(int argc, char const *argv[]) {
+
+	Graph<int> graph1 = createGraph1();
+
+	GraphViewer *gv = generateGraphViewer(graph1);
+
+	gv->rearrange();
+
+
 
 	getchar();
 

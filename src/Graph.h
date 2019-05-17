@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <unordered_set>
 #include <iostream>
+#include <string>
 #include "MutablePriorityQueue.h"
 
 using namespace std;
@@ -24,6 +25,9 @@ template <class T> class Vertex;
 
 template <class T>
 class Vertex {
+
+	static unsigned int currentNodeId;
+
 	T info;                // contents
 	vector<Edge<T> > adj;  // outgoing edges
 	bool visited;          // auxiliary field
@@ -33,6 +37,10 @@ class Vertex {
 
 	void addEdge(Vertex<T> *dest, double w);
 
+	unsigned int nodeId;
+	double x ,y ;
+	std::string name;
+
 
 public:
 	Vertex(T in);
@@ -40,13 +48,17 @@ public:
 	T getInfo() const;
 	double getDist() const;
 	Vertex *getPath() const;
+	unsigned int getNodeId() const;
+	vector<Edge<T> > getEdges() const;
 	friend class Graph<T>;
 	friend class MutablePriorityQueue<Vertex<T>>;
 };
 
+template <class T>
+unsigned int Vertex<T>::currentNodeId = 0;
 
 template <class T>
-Vertex<T>::Vertex(T in): info(in), visited(false) {}
+Vertex<T>::Vertex(T in): info(in), visited(false) , nodeId(currentNodeId++) {}
 
 /*
  * Auxiliary function to add an outgoing edge to a vertex (this),
@@ -61,6 +73,11 @@ template <class T>
 bool Vertex<T>::operator<(Vertex<T> & vertex) const {
 	return this->dist < vertex.dist;
 }
+
+template <class T>
+unsigned int Vertex<T>::getNodeId() const{return nodeId;}
+template <class T>
+vector<Edge<T> > Vertex<T>::getEdges() const{ return adj;}
 
 template <class T>
 T Vertex<T>::getInfo() const {
@@ -81,28 +98,41 @@ Vertex<T> *Vertex<T>::getPath() const {
 
 template <class T>
 class Edge {
-	Vertex<T> *orig; 	// Fp07
-	Vertex<T> * dest;      // destination vertex
+
+	static unsigned int currentEdge;
+
 	double weight;         // edge weight
 
 	bool selected; // Fp07
 
+	unsigned int edgeId;
+
 public:
+
+	Vertex<T> *orig; 	// Fp07
+	Vertex<T> * dest;      // destination vertex
+
 	Edge(Vertex<T> *o, Vertex<T> *d, double w);
 	friend class Graph<T>;
 	friend class Vertex<T>;
+	unsigned int getEdgeId() const;
 
 	// Fp07
 	double getWeight() const;
 };
 
 template <class T>
-Edge<T>::Edge(Vertex<T> *o, Vertex<T> *d, double w): orig(o), dest(d), weight(w) {}
+unsigned int Edge<T>::currentEdge = 0;
+
+template <class T>
+Edge<T>::Edge(Vertex<T> *o, Vertex<T> *d, double w): orig(o), dest(d), weight(w) , edgeId(currentEdge++){}
 
 template <class T>
 double Edge<T>::getWeight() const {
 	return weight;
 }
+template <class T>
+unsigned int Edge<T>::getEdgeId() const{return edgeId;}
 
 
 /*************************** Graph  **************************/
@@ -362,8 +392,6 @@ vector<T> Graph<T>::getfloydWarshallPath(const T &orig, const T &dest) const{
 }
 
 /**************** Minimum Spanning Tree  ***************/
-
-#define INF 1000000
 
 template <class T>
 vector<Vertex<T>* > Graph<T>::calculatePrim() {
