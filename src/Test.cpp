@@ -10,6 +10,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "DeliverySystem.h"
+
 
 
 Graph<int> createGraph1() {
@@ -34,7 +36,7 @@ template<class T>
 GraphViewer * generateGraphViewer(Graph<T> &graph){
 
 	GraphViewer *gv = new GraphViewer(600, 600, true);
-	gv->createWindow(600, 600);
+	gv->createWindow(900, 600);
 
 	gv->defineVertexColor("blue");
 	gv->defineEdgeColor("black");
@@ -43,6 +45,7 @@ GraphViewer * generateGraphViewer(Graph<T> &graph){
 
 	for(unsigned int i = 0; i<v.size();i++){
 		gv->addNode(v[i]->getNodeId());
+		gv->setVertexLabel(v[i]->getNodeId() , to_string(v[i]->getInfo()));
 	}
 
 	for(unsigned int i = 0; i<v.size();i++){
@@ -62,10 +65,16 @@ template<class T>
 void getAndShowPath(T start, T end, Graph<T> &g , GraphViewer * gv){
 	g.dijkstraShortestPath(start);
 	vector<Vertex<T> *> v = g.getPathV(start,end);
+	showPath(v,gv);
+}
+
+template<class T>
+void showPath( vector<Vertex<T> *> v , GraphViewer * gv){
 	for(unsigned int i = 0; i < v.size();i++){
 		gv->setVertexColor(v[i]->getNodeId(),"RED");
+		gv->rearrange();
+		Sleep(1000);
 	}
-	gv->rearrange();
 }
 
 int main(int argc, char const *argv[]) {
@@ -73,8 +82,6 @@ int main(int argc, char const *argv[]) {
 	Graph<int> graph1 = createGraph1();
 
 	GraphViewer *gv = generateGraphViewer(graph1);
-
-	getchar();
 
 	getAndShowPath(1,6,graph1 , gv);
 
@@ -86,4 +93,3 @@ int main(int argc, char const *argv[]) {
 
 	return 0;
 }
-

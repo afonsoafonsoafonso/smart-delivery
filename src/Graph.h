@@ -38,7 +38,7 @@ class Vertex {
 	void addEdge(Vertex<T> *dest, double w);
 
 	unsigned int nodeId;
-	double x ,y ;
+	double x = 0 , y = 0 ;
 	std::string name;
 
 
