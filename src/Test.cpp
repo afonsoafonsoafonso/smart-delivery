@@ -58,11 +58,25 @@ GraphViewer * generateGraphViewer(Graph<T> &graph){
 	return gv;
 }
 
+template<class T>
+void getAndShowPath(T start, T end, Graph<T> &g , GraphViewer * gv){
+	g.dijkstraShortestPath(start);
+	vector<Vertex<T> *> v = g.getPathV(start,end);
+	for(unsigned int i = 0; i < v.size();i++){
+		gv->setVertexColor(v[i]->getNodeId(),"RED");
+	}
+	gv->rearrange();
+}
+
 int main(int argc, char const *argv[]) {
 
 	Graph<int> graph1 = createGraph1();
 
 	GraphViewer *gv = generateGraphViewer(graph1);
+
+	getchar();
+
+	getAndShowPath(1,6,graph1 , gv);
 
 	gv->rearrange();
 

@@ -109,8 +109,8 @@ class Edge {
 
 public:
 
-	Vertex<T> *orig; 	// Fp07
-	Vertex<T> * dest;      // destination vertex
+	Vertex<T> *orig = NULL; 	// Fp07
+	Vertex<T> * dest = NULL;      // destination vertex
 
 	Edge(Vertex<T> *o, Vertex<T> *d, double w);
 	friend class Graph<T>;
@@ -161,6 +161,7 @@ public:
 	void unweightedShortestPath(const T &s);
 	void bellmanFordShortestPath(const T &s);
 	vector<T> getPath(const T &origin, const T &dest) const;
+	vector<Vertex<T>*> getPathV(const T &origin, const T &dest) const;
 
 	// Fp05 - all pairs
 	void floydWarshallShortestPath();
@@ -293,6 +294,18 @@ vector<T> Graph<T>::getPath(const T &origin, const T &dest) const{
 		return res;
 	for ( ; v != nullptr; v = v->path)
 		res.push_back(v->info);
+	reverse(res.begin(), res.end());
+	return res;
+}
+
+template<class T>
+vector<Vertex<T> *> Graph<T>::getPathV(const T &origin, const T &dest) const{
+	vector<Vertex<T> * > res;
+	auto v = findVertex(dest);
+	if (v == nullptr || v->dist == INF) // missing or disconnected
+		return res;
+	for ( ; v != nullptr; v = v->path)
+		res.push_back(v);
 	reverse(res.begin(), res.end());
 	return res;
 }
