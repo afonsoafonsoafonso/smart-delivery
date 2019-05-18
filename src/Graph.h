@@ -12,6 +12,7 @@
 #include <iostream>
 #include <string>
 #include "MutablePriorityQueue.h"
+#include <cmath>
 
 using namespace std;
 
@@ -26,7 +27,6 @@ template <class T> class Vertex;
 template <class T>
 class Vertex {
 
-	static unsigned int currentNodeId;
 
 	T info;                // contents
 	vector<Edge<T> > adj;  // outgoing edges
@@ -37,28 +37,41 @@ class Vertex {
 
 	void addEdge(Vertex<T> *dest, double w);
 
-	unsigned int nodeId;
+	bool position = false;
 	double x = 0 , y = 0 ;
-	std::string name;
+	//std::string name;
 
 
 public:
 	Vertex(T in);
+	Vertex(T in , int x,int y);
 	bool operator<(Vertex<T> & vertex) const; // // required by MutablePriorityQueue
 	T getInfo() const;
 	double getDist() const;
 	Vertex *getPath() const;
-	unsigned int getNodeId() const;
 	vector<Edge<T> > getEdges() const;
+
+	double getX()const;
+	double getY()const;
+	bool hasPosition() const;
+
 	friend class Graph<T>;
 	friend class MutablePriorityQueue<Vertex<T>>;
 };
 
-template <class T>
-unsigned int Vertex<T>::currentNodeId = 0;
 
 template <class T>
-Vertex<T>::Vertex(T in): info(in), visited(false) , nodeId(currentNodeId++) {}
+Vertex<T>::Vertex(T in): info(in), visited(false) {}
+
+template <class T>
+Vertex<T>::Vertex(T in, int x,int y): info(in), visited(false), x(x) , y(y) , position(true) {}
+
+template <class T>
+double Vertex<T>::getX()const {return x;}
+template <class T>
+double Vertex<T>::getY()const {return y;}
+template <class T>
+bool Vertex<T>::hasPosition()const {return position;}
 
 /*
  * Auxiliary function to add an outgoing edge to a vertex (this),
@@ -74,8 +87,7 @@ bool Vertex<T>::operator<(Vertex<T> & vertex) const {
 	return this->dist < vertex.dist;
 }
 
-template <class T>
-unsigned int Vertex<T>::getNodeId() const{return nodeId;}
+
 template <class T>
 vector<Edge<T> > Vertex<T>::getEdges() const{ return adj;}
 
@@ -101,9 +113,9 @@ class Edge {
 
 	static unsigned int currentEdge;
 
-	double weight;         // edge weight
+	double weight = 0;    // edge weight
 
-	bool selected; // Fp07
+	//bool selected; // Fp07
 
 	unsigned int edgeId;
 
@@ -113,6 +125,7 @@ public:
 	Vertex<T> * dest = NULL;      // destination vertex
 
 	Edge(Vertex<T> *o, Vertex<T> *d, double w);
+	Edge(Vertex<T> *o, Vertex<T> *d);
 	friend class Graph<T>;
 	friend class Vertex<T>;
 	unsigned int getEdgeId() const;
@@ -125,7 +138,12 @@ template <class T>
 unsigned int Edge<T>::currentEdge = 0;
 
 template <class T>
-Edge<T>::Edge(Vertex<T> *o, Vertex<T> *d, double w): orig(o), dest(d), weight(w) , edgeId(currentEdge++){}
+Edge<T>::Edge(Vertex<T> *o, Vertex<T> *d, double w):weight(w),edgeId(currentEdge++) , orig(o), dest(d){}
+
+template <class T>
+Edge<T>::Edge(Vertex<T> *o, Vertex<T> *d): orig(o), dest(d) , edgeId(currentEdge++){
+	weight = sqrt( pow(o->x - d->x,2) + pow(o->y - d->y));
+}
 
 template <class T>
 double Edge<T>::getWeight() const {
