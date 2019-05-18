@@ -49,9 +49,34 @@ Graph<int> createGraph2() {
 			}
 		}
 	}
-
 	return myGraph;
 }
+
+Graph<int> createGraph3() {
+	Graph<int> myGraph;
+
+	myGraph.addVertex(0,0,0);
+	myGraph.addVertex(1,0,6);
+	myGraph.addVertex(2,4,8);
+	myGraph.addVertex(3,4,0);
+	myGraph.addVertex(4,3,3);
+	myGraph.addVertex(5,5,5);
+	myGraph.addVertex(6,6,6);
+
+
+
+	vector<Vertex <int> *> v = myGraph.getVertexSet();
+
+	for(unsigned int i = 0; i <v.size();i++){
+		for(unsigned int a = 0; a <v.size();a++){
+			if(i!=a){
+				myGraph.addEdge(i,a);
+			}
+		}
+	}
+	return myGraph;
+}
+
 
 template<class T>
 GraphViewer * generateGraphViewer(Graph<T> *graph){
@@ -102,6 +127,7 @@ GraphViewer * generateGraphViewer(DeliverySystem<T> ds){
 	GraphViewer * gv = generateGraphViewer(ds.getMap());
 	setPickups(ds.getPickupPoints() , gv);
 	setDeliveries(ds.getDeliverPoints() , gv);
+	gv->rearrange();
 	return gv;
 }
 
@@ -117,6 +143,7 @@ void showPath( vector<Vertex<T> *> v , GraphViewer * gv){
 template<class T>
 void showPath( vector<T> v , GraphViewer * gv){
 	for(unsigned int i = 0; i < v.size();i++){
+		cout<<v[i]<<endl;
 		gv->setVertexColor(v[i],"RED");
 		gv->rearrange();
 		Sleep(1000);
@@ -125,18 +152,19 @@ void showPath( vector<T> v , GraphViewer * gv){
 
 int main(int argc, char const *argv[]) {
 
-	Graph<int> graph = createGraph2();
+	Graph<int> graph = createGraph3();
 
 	DeliverySystem<int> ds(graph , 1 , 0);
 
-	ds.addRequest(Request<int>(1 , 3 , "nenhuma"));
-	ds.addRequest(Request<int>(2 , 4 , "nenhuma"));
+	ds.addRequest(Request<int>(1 , 5 , "nenhuma"));
+	ds.addRequest(Request<int>(2 , 6 , "nenhuma"));
+	ds.addRequest(Request<int>(4 , 3, "nenhuma"));
 
 
 	GraphViewer *gv = generateGraphViewer(ds);
 
 	//ds.initiateRoutes();
-	ds.newAlgorithm();
+	//ds.newAlgorithm();
 
 	showPath(ds.newAlgorithm() , gv);
 

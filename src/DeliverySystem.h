@@ -104,6 +104,7 @@ double DeliverySystem<T>::calculatePathWeight(vector<T> path){
 
 template<class T>
 double DeliverySystem<T>::getMin(vector<T> &v , size_t pos , T value){
+	//int iter = 0;
 	double min = INF;
 	vector<T> t;
 	for(size_t i = pos+1; i < v.size();i++){
@@ -114,6 +115,7 @@ double DeliverySystem<T>::getMin(vector<T> &v , size_t pos , T value){
 			min = dist;
 			t = temp;
 		}
+		//iter++;
 	}
 	vector<T> temp = v;
 	temp.push_back(value);
@@ -123,13 +125,14 @@ double DeliverySystem<T>::getMin(vector<T> &v , size_t pos , T value){
 		t = temp;
 	}
 	v = t;
+	//cout<<"\n\nNUM_ITER : " << iter<<"\n\n"<<endl;
 	return dist;
 }
 
 template<class T>
 vector<T> DeliverySystem<T>::newAlgorithm(){
 	vector<T> v;
-
+	//int iter = 0;
 	for(unsigned int r = 0; r < requests.size() ; r++){
 
 		double min = INF;
@@ -137,11 +140,14 @@ vector<T> DeliverySystem<T>::newAlgorithm(){
 		for(unsigned int a = 0; a < v.size() ; a++){
 			vector<T> temp = v;
 			temp.insert(temp.begin() + a , requests[r].getInicio());
+			if(calculatePathWeight(temp) > min)
+				continue;
 			double dist = getMin(temp,a,requests[r].getFim());
 			if(dist < min){
 				min = dist;
 				next = temp;
 			}
+			//iter++;
 		}
 		vector<T> temp = v;
 		temp.push_back(requests[r].getInicio());
@@ -153,8 +159,10 @@ vector<T> DeliverySystem<T>::newAlgorithm(){
 		}
 		v = next;
 	}
+	cout<<calculatePathWeight(v)<<endl;
 	v.insert(v.begin(),origNode);
 	v.push_back(origNode);
+	//cout<<"\n\nNUM_ITER : " << iter<<"\n\n"<<endl;
 	return v;
 }
 
