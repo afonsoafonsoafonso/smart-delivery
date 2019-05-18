@@ -114,6 +114,15 @@ void showPath( vector<Vertex<T> *> v , GraphViewer * gv){
 	}
 }
 
+template<class T>
+void showPath( vector<T> v , GraphViewer * gv){
+	for(unsigned int i = 0; i < v.size();i++){
+		gv->setVertexColor(v[i],"RED");
+		gv->rearrange();
+		Sleep(1000);
+	}
+}
+
 int main(int argc, char const *argv[]) {
 
 	Graph<int> graph = createGraph2();
@@ -126,9 +135,10 @@ int main(int argc, char const *argv[]) {
 
 	GraphViewer *gv = generateGraphViewer(ds);
 
-	ds.initiateRoutes();
+	//ds.initiateRoutes();
+	ds.newAlgorithm();
 
-	showPath(ds.getPath(4) , gv);
+	showPath(ds.newAlgorithm() , gv);
 
 
 

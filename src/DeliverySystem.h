@@ -27,6 +27,9 @@ class DeliverySystem{
 	vector<Request<T>> requests;
 	T origNode;
 
+	double calculatePathWeight(vector<T> path);
+	double getMin(vector<T> &temp , size_t pos , T value);
+
 public:
 
 	DeliverySystem(Graph<T> graph, unsigned int num_vehicles);
@@ -38,6 +41,7 @@ public:
 
 	void initiateRoutes(T data);
 	void initiateRoutes();
+	vector<T> newAlgorithm();
 	vector<Vertex<T> *> getPath(T destNode);
 
 	vector<Request<T>> getRequests() const;
@@ -86,8 +90,87 @@ void DeliverySystem<T>::initiateRoutes(T data){
 }
 
 template<class T>
+double DeliverySystem<T>::calculatePathWeight(vector<T> path){
+	double dist = 0;
+	if(path.size() == 0)
+		return dist;
+	dist+=originalMap.getWeight(origNode , path[0]);
+	for(unsigned int i = 0; i < path.size()-1 ; i++){
+		dist+=originalMap.getWeight(path[i] , path[i+1]);
+	}
+	dist+=originalMap.getWeight(path[path.size()-1] , origNode);
+	return dist;
+}
+
+template<class T>
+double DeliverySystem<T>::getMin(vector<T> &v , size_t pos , T value){
+	double min = INF;
+	vector<T> t;
+	for(size_t i = pos+1; i < v.size();i++){
+		vector<T> temp = v;
+		temp.insert(temp.begin() + i,value);
+		double dist = calculatePathWeight(temp);
+		if(dist < min){
+			min = dist;
+			t = temp;
+		}
+	}
+	vector<T> temp = v;
+	temp.push_back(value);
+	double dist = calculatePathWeight(temp);
+	if(dist < min){
+		min = dist;
+		t = temp;
+	}
+	v = t;
+	return dist;
+}
+
+template<class T>
+vector<T> DeliverySystem<T>::newAlgorithm(){
+	vector<T> v;
+
+	for(unsigned int r = 0; r < requests.size() ; r++){
+
+		double min = INF;
+		vector<T> next;
+		for(unsigned int a = 0; a < v.size() ; a++){
+			vector<T> temp = v;
+			temp.insert(temp.begin() + a , requests[r].getInicio());
+			double dist = getMin(temp,a,requests[r].getFim());
+			if(dist < min){
+				min = dist;
+				next = temp;
+			}
+		}
+		vector<T> temp = v;
+		temp.push_back(requests[r].getInicio());
+		temp.push_back(requests[r].getFim());
+		double dist = calculatePathWeight(temp);
+		if(dist < min){
+			min = dist;
+			next = temp;
+		}
+		v = next;
+	}
+	v.insert(v.begin(),origNode);
+	v.push_back(origNode);
+	return v;
+}
+
+
+
+
+
+
+
+
+
+template<class T>
 void DeliverySystem<T>::initiateRoutes(){
 	originalMap.dijkstraShortestPath(origNode);
+	vector<T> path = {1,2,3};
+	cout<<calculatePathWeight(path)<<endl;
 }
 template<class T>
 vector<Vertex<T> *> DeliverySystem<T>::getPath(T destNode){

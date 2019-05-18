@@ -184,6 +184,7 @@ public:
 	bool addVertex(const T &in,double x, double y);
 	bool addEdge(const T &sourc, const T &dest, double w);
 	bool addEdge(const T &sourc, const T &dest);
+	double getWeight(T orig , T dest);
 	int getNumVertex() const;
 	vector<Vertex<T> *> getVertexSet() const;
 
@@ -213,6 +214,18 @@ int Graph<T>::getNumVertex() const {
 template <class T>
 vector<Vertex<T> *> Graph<T>::getVertexSet() const {
 	return vertexSet;
+}
+
+template <class T>
+double Graph<T>::getWeight(T orig , T dest){
+	Vertex<T> * v = findVertex(orig);
+	if(v == nullptr)
+		return INF;
+	for(unsigned int i = 0; i < v->adj.size();i++){
+		if(v->adj[i].dest->info == dest )
+			return v->adj[i].weight;
+	}
+	return INF;
 }
 
 /*
