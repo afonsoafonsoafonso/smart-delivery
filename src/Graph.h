@@ -36,6 +36,7 @@ class Vertex {
 	int queueIndex = 0; 		// required by MutablePriorityQueue
 
 	void addEdge(Vertex<T> *dest, double w);
+	void addEdge(Vertex<T> *dest);
 
 	bool position = false;
 	double x = 0 , y = 0 ;
@@ -64,7 +65,12 @@ template <class T>
 Vertex<T>::Vertex(T in): info(in), visited(false) {}
 
 template <class T>
-Vertex<T>::Vertex(T in, int x,int y): info(in), visited(false), x(x) , y(y) , position(true) {}
+Vertex<T>::Vertex(T in, int x,int y): info(in) {
+	this->x = x;
+	this->y = y;
+	this->position = true;
+	this->visited = false;
+}
 
 template <class T>
 double Vertex<T>::getX()const {return x;}
@@ -80,6 +86,11 @@ bool Vertex<T>::hasPosition()const {return position;}
 template <class T>
 void Vertex<T>::addEdge(Vertex<T> *d, double w) {
 	adj.push_back(Edge<T>(this, d, w));
+}
+
+template <class T>
+void Vertex<T>::addEdge(Vertex<T> *d) {
+	adj.push_back(Edge<T>(this, d));
 }
 
 template <class T>
@@ -141,8 +152,8 @@ template <class T>
 Edge<T>::Edge(Vertex<T> *o, Vertex<T> *d, double w):weight(w),edgeId(currentEdge++) , orig(o), dest(d){}
 
 template <class T>
-Edge<T>::Edge(Vertex<T> *o, Vertex<T> *d): orig(o), dest(d) , edgeId(currentEdge++){
-	weight = sqrt( pow(o->x - d->x,2) + pow(o->y - d->y));
+Edge<T>::Edge(Vertex<T> *o, Vertex<T> *d):edgeId(currentEdge++), orig(o), dest(d){
+	weight = sqrt( pow(o->getX() - d->getX(),2) + pow(o->getY() - d->getY(),2));
 }
 
 template <class T>
@@ -170,7 +181,9 @@ class Graph {
 public:
 	Vertex<T> *findVertex(const T &in) const;
 	bool addVertex(const T &in);
+	bool addVertex(const T &in,double x, double y);
 	bool addEdge(const T &sourc, const T &dest, double w);
+	bool addEdge(const T &sourc, const T &dest);
 	int getNumVertex() const;
 	vector<Vertex<T> *> getVertexSet() const;
 
@@ -235,6 +248,14 @@ bool Graph<T>::addVertex(const T &in) {
 	return true;
 }
 
+template <class T>
+bool Graph<T>::addVertex(const T &in,double x, double y) {
+	if (findVertex(in) != nullptr)
+		return false;
+	vertexSet.push_back(new Vertex<T>(in,x,y));
+	return true;
+}
+
 /*
  * Adds an edge to a graph (this), given the contents of the source and
  * destination vertices and the edge weight (w).
@@ -247,6 +268,16 @@ bool Graph<T>::addEdge(const T &sourc, const T &dest, double w) {
 	if (v1 == nullptr || v2 == nullptr)
 		return false;
 	v1->addEdge(v2, w);
+	return true;
+}
+
+template <class T>
+bool Graph<T>::addEdge(const T &sourc, const T &dest) {
+	auto v1 = findVertex(sourc);
+	auto v2 = findVertex(dest);
+	if (v1 == nullptr || v2 == nullptr)
+		return false;
+	v1->addEdge(v2);
 	return true;
 }
 

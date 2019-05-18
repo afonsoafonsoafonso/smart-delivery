@@ -31,6 +31,27 @@ Graph<int> createGraph1() {
 
 	return myGraph;
 }
+Graph<int> createGraph2() {
+	Graph<int> myGraph;
+
+	myGraph.addVertex(0,0,0);
+	myGraph.addVertex(1,0,4);
+	myGraph.addVertex(2,3,0);
+	myGraph.addVertex(3,3,2);
+	myGraph.addVertex(4,7,4);
+
+	vector<Vertex <int> *> v = myGraph.getVertexSet();
+
+	for(unsigned int i = 0; i <v.size();i++){
+		for(unsigned int a = 0; a <v.size();a++){
+			if(i!=a){
+				myGraph.addEdge(i,a);
+			}
+		}
+	}
+
+	return myGraph;
+}
 
 template<class T>
 GraphViewer * generateGraphViewer(Graph<T> *graph){
@@ -95,18 +116,19 @@ void showPath( vector<Vertex<T> *> v , GraphViewer * gv){
 
 int main(int argc, char const *argv[]) {
 
-	Graph<int> graph1 = createGraph1();
+	Graph<int> graph = createGraph2();
 
-	DeliverySystem<int> ds(graph1 , 1 , 1);
+	DeliverySystem<int> ds(graph , 1 , 0);
 
-	ds.addRequest(Request<int>(2 , 3 , "nenhuma"));
+	ds.addRequest(Request<int>(1 , 3 , "nenhuma"));
+	ds.addRequest(Request<int>(2 , 4 , "nenhuma"));
 
 
 	GraphViewer *gv = generateGraphViewer(ds);
 
 	ds.initiateRoutes();
 
-	showPath(ds.getPath(6) , gv);
+	showPath(ds.getPath(4) , gv);
 
 
 
