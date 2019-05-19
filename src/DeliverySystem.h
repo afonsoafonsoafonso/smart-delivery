@@ -117,8 +117,12 @@ double DeliverySystem<T>::calculatePathWeight(vector<T> path){
 template<class T>
 double DeliverySystem<T>::calculateVehiclesWeight(){
 	double dist = 0;
-	for(unsigned int i = 0; i < vehicles.size();i++)
-		dist+=calculatePathWeight(vehicles[i].getPath());
+	for(unsigned int i = 0; i < vehicles.size();i++){
+		double temp = calculatePathWeight(vehicles[i].getPath());
+		if(temp == 0)
+			return dist;
+		dist+=temp;
+	}
 	return dist;
 }
 

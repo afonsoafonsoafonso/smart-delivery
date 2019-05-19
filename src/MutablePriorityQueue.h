@@ -1,3 +1,4 @@
+
 /*
  * MutablePriorityQueue.h
  * A simple implementation of mutable priority queues, required by Dijkstra algorithm.

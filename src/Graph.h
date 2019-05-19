@@ -13,6 +13,8 @@
 #include <string>
 #include "MutablePriorityQueue.h"
 #include <cmath>
+#include <unordered_set>
+#include <unordered_map>
 
 using namespace std;
 
@@ -25,11 +27,30 @@ template <class T> class Vertex;
 /************************* Vertex  **************************/
 
 template <class T>
+struct eqhashEdge {
+	bool operator() (const Edge<T> &e1, const Edge<T> &e2) const{
+		//cout<<e1.orig<<"\t"<<e2.orig<<"\t"<<e1.dest<<"\t"<<e2.dest<<endl;
+		return e1.orig == e2.orig && e1.dest == e2.dest;
+	}
+};
+
+template <class T>
+struct hhashEdge {
+	int operator() (const Edge<T> &e1) const  {
+		hash<T> hash_T;
+		return hash_T((int)e1.orig + (int)e1.dest);
+	}
+};
+
+template <class T>
 class Vertex {
 
 
 	T info;                // contents
-	vector<Edge<T> > adj;  // outgoing edges
+
+	//vector<Edge<T> > adj;  // outgoing edges
+	std::unordered_set< Edge<T> , hhashEdge<T>, eqhashEdge<T> > edgeHashTable;
+
 	bool visited;          // auxiliary field
 	double dist = 0;
 	Vertex<T> *path = nullptr;
@@ -56,6 +77,8 @@ public:
 	double getY()const;
 	bool hasPosition() const;
 
+	double getEdgeWeight(Vertex<T> * dest);
+
 	friend class Graph<T>;
 	friend class MutablePriorityQueue<Vertex<T>>;
 };
@@ -78,6 +101,20 @@ template <class T>
 double Vertex<T>::getY()const {return y;}
 template <class T>
 bool Vertex<T>::hasPosition()const {return position;}
+template <class T>
+double Vertex<T>::getEdgeWeight(Vertex<T> * dest){
+	if(this == dest)
+			return 0;
+
+	Edge<T> e(this,dest);
+	typename unordered_set< Edge<T>, hhashEdge<T>, eqhashEdge<T>>::const_iterator it = edgeHashTable.find(e);
+	if(it == edgeHashTable.end()){
+		cout<<"a"<<endl;
+		return INF;
+	}
+	return it->getWeight();
+
+}
 
 /*
  * Auxiliary function to add an outgoing edge to a vertex (this),
@@ -85,12 +122,14 @@ bool Vertex<T>::hasPosition()const {return position;}
  */
 template <class T>
 void Vertex<T>::addEdge(Vertex<T> *d, double w) {
-	adj.push_back(Edge<T>(this, d, w));
+	//adj.push_back(Edge<T>(this, d, w));
+	edgeHashTable.insert(Edge<T>(this, d, w));
 }
 
 template <class T>
 void Vertex<T>::addEdge(Vertex<T> *d) {
-	adj.push_back(Edge<T>(this, d));
+	//adj.push_back(Edge<T>(this, d));
+	edgeHashTable.insert(Edge<T>(this, d));
 }
 
 template <class T>
@@ -100,7 +139,12 @@ bool Vertex<T>::operator<(Vertex<T> & vertex) const {
 
 
 template <class T>
-vector<Edge<T> > Vertex<T>::getEdges() const{ return adj;}
+vector<Edge<T> > Vertex<T>::getEdges() const{
+	vector<Edge<T> > v;
+	for ( auto it = edgeHashTable.begin(); it != edgeHashTable.end(); ++it )
+		v.push_back(*it);
+	return v;
+}
 
 template <class T>
 T Vertex<T>::getInfo() const {
@@ -167,8 +211,25 @@ unsigned int Edge<T>::getEdgeId() const{return edgeId;}
 /*************************** Graph  **************************/
 
 template <class T>
+struct eqhash {
+	bool operator() (const Vertex<T> * s1, const Vertex<T> * s2) const{
+		return s1->getInfo() == s2->getInfo();
+	}
+};
+
+template <class T>
+struct hhash {
+	int operator() (const Vertex<T> *s1) const  {
+		hash<T> hash_T;
+		return hash_T(s1->getInfo());
+	}
+};
+
+template <class T>
 class Graph {
-	vector<Vertex<T> *> vertexSet;    // vertex set
+	//vector<Vertex<T> *> vertexSet;    // vertex set
+	std::unordered_set< Vertex<T> *, hhash<T>, eqhash<T> > vertexHashTable;
+	//std::unordered_map< T, Vertex<T> *, hhash<T>, eqhash<T> > vertexMap;
 
 	// Fp05
 	Vertex<T> * initSingleSource(const T &orig);
@@ -208,12 +269,15 @@ public:
 
 template <class T>
 int Graph<T>::getNumVertex() const {
-	return vertexSet.size();
+	return vertexHashTable.size();
 }
 
 template <class T>
 vector<Vertex<T> *> Graph<T>::getVertexSet() const {
-	return vertexSet;
+	vector<Vertex<T> *> v;
+	for ( auto it = vertexHashTable.begin(); it != vertexHashTable.end(); ++it )
+		v.push_back(*it);
+	return v;
 }
 
 template <class T>
@@ -221,11 +285,12 @@ double Graph<T>::getWeight(T orig , T dest){
 	Vertex<T> * v = findVertex(orig);
 	if(v == nullptr)
 		return INF;
-	for(unsigned int i = 0; i < v->adj.size();i++){
-		if(v->adj[i].dest->info == dest )
-			return v->adj[i].weight;
-	}
-	return INF;
+	Vertex<T> * d = findVertex(dest);
+	if(d == nullptr)
+		return INF;
+	double dist = v->getEdgeWeight(d);
+	//cout<<dist<<endl;
+	return dist;
 }
 
 /*
@@ -233,10 +298,11 @@ double Graph<T>::getWeight(T orig , T dest){
  */
 template <class T>
 Vertex<T> * Graph<T>::findVertex(const T &in) const {
-	for (auto v : vertexSet)
-		if (v->info == in)
-			return v;
-	return nullptr;
+	Vertex<T> v(in);
+	typename unordered_set< Vertex<T> *, hhash<T>, eqhash<T>>::const_iterator it = vertexHashTable.find(&v);
+	if(it == vertexHashTable.end())
+		return nullptr;
+	return *it;
 }
 
 /*
@@ -244,9 +310,9 @@ Vertex<T> * Graph<T>::findVertex(const T &in) const {
  */
 template <class T>
 int Graph<T>::findVertexIdx(const T &in) const {
-	for (unsigned i = 0; i < vertexSet.size(); i++)
+	/*for (unsigned i = 0; i < vertexSet.size(); i++)
 		if (vertexSet[i]->info == in)
-			return i;
+			return i;*/
 	return -1;
 }
 /*
@@ -257,7 +323,9 @@ template <class T>
 bool Graph<T>::addVertex(const T &in) {
 	if (findVertex(in) != nullptr)
 		return false;
-	vertexSet.push_back(new Vertex<T>(in));
+	Vertex<T> * v =  new Vertex<T>(in);
+	//vertexSet.push_back(v);
+	vertexHashTable.insert(v);
 	return true;
 }
 
@@ -265,7 +333,9 @@ template <class T>
 bool Graph<T>::addVertex(const T &in,double x, double y) {
 	if (findVertex(in) != nullptr)
 		return false;
-	vertexSet.push_back(new Vertex<T>(in,x,y));
+	Vertex<T> * v =  new Vertex<T>(in,x,y);
+	//vertexSet.push_back(v);
+	vertexHashTable.insert(v);
 	return true;
 }
 
@@ -304,7 +374,7 @@ bool Graph<T>::addEdge(const T &sourc, const T &dest) {
  */
 template<class T>
 Vertex<T> * Graph<T>::initSingleSource(const T &origin) {
-	for(auto v : vertexSet) {
+	for(auto v : vertexHashTable) {
 		v->dist = INF;
 		v->path = nullptr;
 	}
@@ -389,6 +459,7 @@ void Graph<T>::unweightedShortestPath(const T &orig) {
 template<class T>
 void Graph<T>::bellmanFordShortestPath(const T &orig) {
 	initSingleSource(orig);
+	vector<Vertex <T>> vertexSet = getVertexSet();
 	for (unsigned i = 1; i < vertexSet.size(); i++)
 		for (auto v: vertexSet)
 			for (auto e: v->adj)
@@ -414,13 +485,14 @@ void deleteMatrix(T **m, int n) {
 
 template <class T>
 Graph<T>::~Graph() {
-	deleteMatrix(W, vertexSet.size());
-	deleteMatrix(P, vertexSet.size());
+	deleteMatrix(W, getVertexSet().size());
+	deleteMatrix(P, getVertexSet().size());
 }
 
 template<class T>
 void Graph<T>::floydWarshallShortestPath() {
-	unsigned n = vertexSet.size();
+	unsigned n = getNumVertex();
+	vector<Vertex <T>> vertexSet = getVertexSet();
 	deleteMatrix(W, n);
 	deleteMatrix(P, n);
 	W = new double *[n];
@@ -452,7 +524,7 @@ void Graph<T>::floydWarshallShortestPath() {
 			}
 }
 
-
+/*
 template<class T>
 vector<T> Graph<T>::getfloydWarshallPath(const T &orig, const T &dest) const{
 	vector<T> res;
@@ -465,9 +537,9 @@ vector<T> Graph<T>::getfloydWarshallPath(const T &orig, const T &dest) const{
 	reverse(res.begin(), res.end());
 	return res;
 }
-
+*/
 /**************** Minimum Spanning Tree  ***************/
-
+/*
 template <class T>
 vector<Vertex<T>* > Graph<T>::calculatePrim() {
 	// TODO
@@ -509,13 +581,13 @@ vector<Vertex<T>* > Graph<T>::calculatePrim() {
 
 	return vertexSet;
 }
-
+*/
 
 
 template <class T>
 vector<Vertex<T>*> Graph<T>::calculateKruskal() {
 	// TODO
-	return vertexSet;
+	return getVertexSet();
 }
 
 
