@@ -15,7 +15,7 @@
 #include "Vehicle.h"
 #include "Request.h"
 
-#define NUM_MAX_VEHICLES 1
+#define NUM_MAX_VEHICLES 10
 
 template <class T>
 class DeliverySystem{
@@ -28,6 +28,7 @@ class DeliverySystem{
 	T origNode;
 
 	double calculatePathWeight(vector<T> path);
+	double calculateVehiclesWeight();
 	double getMin(vector<T> &temp , size_t pos , T value);
 
 public:
@@ -42,6 +43,9 @@ public:
 	void initiateRoutes(T data);
 	void initiateRoutes();
 	vector<T> newAlgorithm();
+
+	vector<vector<T>> newAlgorithm2();
+
 	vector<Vertex<T> *> getPath(T destNode);
 
 	vector<Request<T>> getRequests() const;
@@ -67,12 +71,20 @@ DeliverySystem<T>::DeliverySystem(Graph<T> g , unsigned int num_vehicles) {
 	if(num_vehicles > NUM_MAX_VEHICLES)
 		num_vehicles = NUM_MAX_VEHICLES;
 	for(unsigned int i = 0; i < num_vehicles ;i++){
-		//vehicles.push_back(Vehicle<T>());
+		vehicles.push_back(Vehicle<T>("nenhuma"));
 	}
+	cout<<vehicles.size()<<endl;
 }
 template<class T>
-DeliverySystem<T>::DeliverySystem(Graph<T> g , unsigned int num_vehicles, T data): originalMap(g){
-	DeliverySystem(g,num_vehicles);
+DeliverySystem<T>::DeliverySystem(Graph<T> g , unsigned int num_vehicles, T data){
+	originalMap = g;
+	if(num_vehicles == 0)
+		exit(0);
+	if(num_vehicles > NUM_MAX_VEHICLES)
+		num_vehicles = NUM_MAX_VEHICLES;
+	for(unsigned int i = 0; i < num_vehicles ;i++){
+		vehicles.push_back(Vehicle<T>("nenhuma"));
+	}
 	setOriginNode(data);
 }
 
@@ -99,6 +111,14 @@ double DeliverySystem<T>::calculatePathWeight(vector<T> path){
 		dist+=originalMap.getWeight(path[i] , path[i+1]);
 	}
 	dist+=originalMap.getWeight(path[path.size()-1] , origNode);
+	return dist;
+}
+
+template<class T>
+double DeliverySystem<T>::calculateVehiclesWeight(){
+	double dist = 0;
+	for(unsigned int i = 0; i < vehicles.size();i++)
+		dist+=calculatePathWeight(vehicles[i].getPath());
 	return dist;
 }
 
@@ -159,15 +179,84 @@ vector<T> DeliverySystem<T>::newAlgorithm(){
 		}
 		v = next;
 	}
-	cout<<calculatePathWeight(v)<<endl;
+	cout<<"1 : " << calculatePathWeight(v)<<endl;
 	v.insert(v.begin(),origNode);
 	v.push_back(origNode);
 	//cout<<"\n\nNUM_ITER : " << iter<<"\n\n"<<endl;
 	return v;
 }
 
+template<class T>
+vector<vector<T>> DeliverySystem<T>::newAlgorithm2(){
 
+	//Reset vehicles
+	for(unsigned int a = 0; a < vehicles.size();a++)
+		vehicles.at(a).reset();
 
+	for(unsigned int r = 0; r < requests.size(); r++){
+
+		unsigned int min_vehicle = -1;
+		double min_dist = INF;
+		vector<T> min_path;
+
+		for(unsigned int b = 0; b < vehicles.size();b++){
+
+			vector<T> path = vehicles.at(b).getPath();
+
+			double min = INF;
+			vector<T> next;
+
+			for(unsigned int a = 0; a < path.size() ; a++){
+				vector<T> temp = path;
+				temp.insert(temp.begin() + a , requests[r].getInicio());
+				vehicles.at(b).setPath(temp);
+				if(calculatePathWeight(temp) > min)
+					continue;
+				double dist = getMin(temp,a,requests[r].getFim());
+				if(dist < min){
+					min = dist;
+					next = temp;
+				}
+			}
+			vector<T> temp = path;
+			temp.push_back(requests[r].getInicio());
+			temp.push_back(requests[r].getFim());
+			double dist = calculatePathWeight(temp);
+			if(dist < min){
+				min = dist;
+				next = temp;
+			}
+			vehicles.at(b).setPath(next);
+
+			dist = calculateVehiclesWeight();
+
+			if(dist < min_dist){
+				min_dist = dist;
+				min_vehicle = b;
+				min_path = next;
+			}
+			vehicles.at(b).setPath(path);
+		}
+
+		vehicles.at(min_vehicle).setPath(min_path);
+	}
+
+	vector<vector<T>> paths;
+
+	for(unsigned int a = 0; a < vehicles.size();a++)
+		paths.push_back(vehicles[a].getPath());
+
+	for(unsigned int a = 0; a < paths.size();a++){
+		for(unsigned int b= 0; b < paths[a].size();b++){
+			cout<<paths[a][b]<< " -> ";
+		}
+		cout<<endl;
+	}
+
+	cout<<"2 : " << calculateVehiclesWeight()<<endl;
+
+	return paths;
+}
 
 
 

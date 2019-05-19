@@ -15,6 +15,7 @@ class Vehicle{
 
 	unsigned int totalDistance = 0;
 	Vertex<T> * currentVertex = NULL;
+	vector<T> path;
 	string especialidade;
 
 public:
@@ -23,13 +24,53 @@ public:
 	void setCurrentVertex(Vertex<T> * v);
 	void addDistance(unsigned int d);
 	unsigned int getTotalDistance() const;
+	void setDistance(unsigned int d);
+
+	vector<T> getPath() const;
+	void setPath(vector<T> v);
+	void addToPath(T data);
+
+	void reset();
 
 
 
 
 };
 
+template<class T>
+Vehicle<T>::Vehicle(string esp){
+	especialidade = esp;
+}
 
+template<class T>
+void Vehicle<T>::setCurrentVertex(Vertex<T> * v){
+	currentVertex = v;
+}
 
+template<class T>
+void Vehicle<T>::addDistance(unsigned int d){
+	totalDistance+=d;
+}
+template<class T>
+void Vehicle<T>::setDistance(unsigned int d){
+	totalDistance=d;
+}
+
+template<class T>
+unsigned int Vehicle<T>::getTotalDistance() const{return totalDistance;}
+
+template<class T>
+vector<T> Vehicle<T>::getPath() const{return path;}
+template<class T>
+void Vehicle<T>::setPath(vector<T> v){path = v;}
+template<class T>
+void Vehicle<T>::addToPath(T data){path.push_back(data);}
+
+template<class T>
+void Vehicle<T>::reset(){
+	setDistance(0);
+	setCurrentVertex(NULL);
+	setPath(vector<T>());
+}
 
 #endif /* SRC_VEHICLE_H_ */

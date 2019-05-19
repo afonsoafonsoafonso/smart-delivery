@@ -100,9 +100,9 @@ Graph<int> createGraph2() {
 
 	myGraph.addVertex(0,0,0);
 	myGraph.addVertex(1,0,4);
-	myGraph.addVertex(2,3,0);
-	myGraph.addVertex(3,3,2);
-	myGraph.addVertex(4,7,4);
+	myGraph.addVertex(2,1,3);
+	myGraph.addVertex(3,-3,-2);
+	myGraph.addVertex(4,-7,-4);
 
 	vector<Vertex <int> *> v = myGraph.getVertexSet();
 
@@ -127,8 +127,6 @@ Graph<int> createGraph3() {
 	myGraph.addVertex(5,5,5);
 	myGraph.addVertex(6,6,6);
 
-
-
 	vector<Vertex <int> *> v = myGraph.getVertexSet();
 
 	for(unsigned int i = 0; i <v.size();i++){
@@ -138,6 +136,62 @@ Graph<int> createGraph3() {
 			}
 		}
 	}
+	return myGraph;
+}
+Graph<int> createGraph4() {
+	Graph<int> myGraph;
+
+	myGraph.addVertex(0,0,0);
+	myGraph.addVertex(1,1,4);
+	myGraph.addVertex(2,4,1);
+	myGraph.addVertex(3,-4,-1);
+	myGraph.addVertex(4,-1,-4);
+	myGraph.addVertex(5,6,0);
+	myGraph.addVertex(6,-2,5);
+
+	myGraph.addEdge(0, 1, 1);
+	myGraph.addEdge(0, 2, 1);
+	myGraph.addEdge(0, 3, 1);
+	myGraph.addEdge(0, 4, 1);
+	myGraph.addEdge(0, 5);
+	myGraph.addEdge(0, 6);
+	myGraph.addEdge(1, 0, 1);
+	myGraph.addEdge(1, 2, 1);
+	myGraph.addEdge(1, 3, 4);
+	myGraph.addEdge(1, 4, 4);
+	myGraph.addEdge(1, 5);
+	myGraph.addEdge(1, 6);
+	myGraph.addEdge(2, 0, 1);
+	myGraph.addEdge(2, 1, 1);
+	myGraph.addEdge(2, 3, 3);
+	myGraph.addEdge(2, 4, 3);
+	myGraph.addEdge(2, 5);
+	myGraph.addEdge(2, 6);
+	myGraph.addEdge(3, 0, 1);
+	myGraph.addEdge(3, 1, 4);
+	myGraph.addEdge(3, 2, 4);
+	myGraph.addEdge(3, 4, 1);
+	myGraph.addEdge(3, 5);
+	myGraph.addEdge(3, 6);
+	myGraph.addEdge(4, 0, 1);
+	myGraph.addEdge(4, 1, 4);
+	myGraph.addEdge(4, 2, 4);
+	myGraph.addEdge(4, 3, 1);
+	myGraph.addEdge(4, 5);
+	myGraph.addEdge(4, 6);
+	myGraph.addEdge(5, 0);
+	myGraph.addEdge(5, 1);
+	myGraph.addEdge(5, 2);
+	myGraph.addEdge(5, 3);
+	myGraph.addEdge(5, 4);
+	myGraph.addEdge(5, 6);
+	myGraph.addEdge(6, 0);
+	myGraph.addEdge(6, 1);
+	myGraph.addEdge(6, 2);
+	myGraph.addEdge(6, 3);
+	myGraph.addEdge(6, 4);
+	myGraph.addEdge(6, 5);
+
 	return myGraph;
 }
 
@@ -216,21 +270,27 @@ void showPath( vector<T> v , GraphViewer * gv){
 
 int main(int argc, char const *argv[]) {
 
-	Graph<int> graph = createGraph3();
+	Graph<int> graph = createGraph4();
 
 	//Graph<int> graph = readFromFile("Aveiro");
 
 	DeliverySystem<int> ds(graph , 1 , 0);
 
-	ds.addRequest(Request<int>(1 , 5 , "nenhuma"));
-	ds.addRequest(Request<int>(2 , 6 , "nenhuma"));
-	ds.addRequest(Request<int>(4 , 3, "nenhuma"));
+	ds.addRequest(Request<int>(1 , 3 , "nenhuma"));
+	ds.addRequest(Request<int>(5 , 2 , "nenhuma"));
+	ds.addRequest(Request<int>(4 , 6 , "nenhuma"));
+
+	//ds.addRequest(Request<int>(1 , 5 , "nenhuma"));
+	//ds.addRequest(Request<int>(2 , 6 , "nenhuma"));
+	//ds.addRequest(Request<int>(3 , 4, "nenhuma"));
 
 
 	GraphViewer *gv = generateGraphViewer(ds);
 
 	//ds.initiateRoutes();
 	//ds.newAlgorithm();
+
+	ds.newAlgorithm2();
 
 	showPath(ds.newAlgorithm() , gv);
 
