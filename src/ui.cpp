@@ -32,6 +32,7 @@ void print_main_menu() {
   cout << "3. Add request;" << endl;
   cout << "4. Load previous session;" << endl;
   cout << "5. Save current session;" << endl;
+  cout << "Input: ";
 }
 
 int get_node_info() {
@@ -81,16 +82,18 @@ int main() {
     int option = get_option();
 
     switch (option) {
-    case 2: {
-      Vehicle<string> vehicle;
-      get_vehicle_info(vehicle);
-      vehicles.push_back(vehicle);
-      break;
-    }
-    case 3: {
-      requests.push_back(get_request());
-      break;
-    }
+      case 2: {
+        Vehicle<string> vehicle;
+        get_vehicle_info(vehicle);
+        vehicles.push_back(vehicle);
+        cout << endl << "»----------------------------------«" << endl << endl;
+        break;
+      }
+      case 3: {
+        requests.push_back(get_request());
+        cout << endl << "»----------------------------------«" << endl << endl;
+        break;
+      }
     }
   }
 }
