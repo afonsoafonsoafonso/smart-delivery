@@ -105,12 +105,6 @@ void DeliverySystem<T>::setProcessedMap() {
 	vector<T> intPoints = getInterestPoints();
 	intPoints.push_back(origNode);
 	vector<Vertex<T>*> path; 
-	//first we add all interest points as vertexes to the
-	//processed map
-
-	//for(unsigned int i = 0; i < intPoints.size();i++)
-		//cout<<intPoints[i]<<endl;
-
 
 	for(unsigned int i=0;i<intPoints.size(); i++) {
 		processedMap.addVertex(intPoints.at(i));
@@ -120,29 +114,16 @@ void DeliverySystem<T>::setProcessedMap() {
 		originalMap.dijkstraShortestPath(intPoints.at(i));
 		//cout<<"c"<<endl;
 		for(unsigned int j=0; j<intPoints.size(); j++) {
-			superEdgeWeight = 0;
 			if(i==j) continue;
+			superEdgeWeight = 0;
 			path = originalMap.getPathV(intPoints.at(i),intPoints.at(j));
-			cout<<endl;
-			for(unsigned int i = 0; i < path.size();i++)
-					cout<<path[i]->getInfo()<<endl;
-			cout<<endl;
-			if(path.size() == 0)
-				continue;
-			for(unsigned int k=1; k<path.size(); k++) {
-				superEdgeWeight += path.at(k-1)->getEdgeWeight(path.at(k));//(path.at(k)-,path.at(k+1)->info);
-				//superEdgeWeight += originalMap.getWeight(path.at(k)->getInfo() , path.at(k+1)->getInfo());
-			}
-			cout<<superEdgeWeight<<endl;
-			processedMap.addEdge(intPoints.at(i), intPoints.at(j), superEdgeWeight);
-			//cout <<"b" << endl;
+			if(path.size() == 0) continue;
+			/*for(unsigned int k=1; k<path.size(); k++) {
+				superEdgeWeight += path.at(k-1)->getEdgeWeight(path.at(k));
+			}*/
+			processedMap.addProcessedEdge(intPoints.at(i), intPoints.at(j), path);
 		}
-		//cout<<"d"<<endl;
 	}
-	vector<Vertex<T> *> v = processedMap.getVertexSet();
-	for(unsigned int i = 0; i < v.size();i++)
-		cout<<v[i]->getInfo()<<endl;
-
 }
 
 template<class T>

@@ -56,6 +56,7 @@ class Vertex {
 	Vertex<T> *path = nullptr;
 	int queueIndex = 0; 		// required by MutablePriorityQueue
 
+	void addProcessedEdge(Vertex<T> *dest, vector<Vertex<T>*> path);
 	void addEdge(Vertex<T> *dest, double w);
 	void addEdge(Vertex<T> *dest);
 
@@ -121,6 +122,11 @@ double Vertex<T>::getEdgeWeight(Vertex<T> * dest){
  * with a given destination vertex (d) and edge weight (w).
  */
 template <class T>
+void Vertex<T>::addProcessedEdge(Vertex<T> *d, vector<Vertex<T>*> p) {
+	edgeHashTable.insert(Edge<T>(this, d, p));
+}
+
+template <class T>
 void Vertex<T>::addEdge(Vertex<T> *d, double w) {
 	//adj.push_back(Edge<T>(this, d, w));
 	edgeHashTable.insert(Edge<T>(this, d, w));
@@ -180,7 +186,7 @@ public:
 	Vertex<T> * dest = NULL;      // destination vertex
 	vector<Vertex<T>*> processedEdge;
 
-	//Edge(Vertex<T> *o, Vertex<T> *d, double w, vector<Vertex<T>*> pE);
+	Edge(Vertex<T> *o, Vertex<T> *d, vector<Vertex<T>*> path);
 	Edge(Vertex<T> *o, Vertex<T> *d, double w);
 	Edge(Vertex<T> *o, Vertex<T> *d);
 	friend class Graph<T>;
@@ -194,13 +200,13 @@ public:
 template <class T>
 unsigned int Edge<T>::currentEdge = 0;
 
-/*template <class T>
-Edge<T>::Edge(Vertex<T> *o, Vertex<T> *d, double w, vector<Vertex<T>*> pE) {
-	orig = o;
-	dest = d;
-	weight = w;
-	processedEdge = pE;
-}*/
+template <class T>
+Edge<T>::Edge(Vertex<T> *o, Vertex<T> *d, vector<Vertex<T>*> path)
+:edgeId(currentEdge++), orig(o), dest(d), processedEdge(path) {
+	for(int k=1; k<path.size(); k++) {
+		weight += path.at(k-1)->getEdgeWeight(path.at(k));
+	}
+}
 
 template <class T>
 Edge<T>::Edge(Vertex<T> *o, Vertex<T> *d, double w):weight(w),edgeId(currentEdge++) , orig(o), dest(d){}
@@ -253,6 +259,7 @@ public:
 	Vertex<T> *findVertex(const T &in) const;
 	bool addVertex(const T &in);
 	bool addVertex(const T &in,double x, double y);
+	bool addProcessedEdge(const T &sourc, const T &dest, vector<Vertex<T>*> path);
 	bool addEdge(const T &sourc, const T &dest, double w);
 	bool addEdge(const T &sourc, const T &dest);
 	double getWeight(T orig , T dest);
@@ -354,6 +361,16 @@ bool Graph<T>::addVertex(const T &in,double x, double y) {
  * destination vertices and the edge weight (w).
  * Returns true if successful, and false if the source or destination vertex does not exist.
  */
+template <class T>
+bool Graph<T>::addProcessedEdge(const T &sourc, const T &dest, vector<Vertex<T>*> path) {
+	auto v1 = findVertex(sourc);
+	auto v2 = findVertex(dest);
+	if (v1 == nullptr || v2 == nullptr)
+		return false;
+	v1->addProcessedEdge(v2, path);
+	return true;
+}
+
 template <class T>
 bool Graph<T>::addEdge(const T &sourc, const T &dest, double w) {
 	auto v1 = findVertex(sourc);

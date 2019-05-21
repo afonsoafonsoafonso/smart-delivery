@@ -350,8 +350,8 @@ int main(int argc, char const *argv[]) {
 	cout << "Teste2\n" ;
 	ds.setProcessedMap();
 	cout << "Teste3\n" ;
-	//GraphViewer *gv = generateProcessedGraphViewer(ds);
-	GraphViewer *gv = generateOriginalGraphViewer(ds);
+	GraphViewer *gv = generateProcessedGraphViewer(ds);
+	//GraphViewer *gv = generateOriginalGraphViewer(ds);
 	//ds.initiateRoutes();
 	//ds.newAlgorithm();
 
