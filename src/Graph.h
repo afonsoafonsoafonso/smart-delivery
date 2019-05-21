@@ -178,7 +178,9 @@ public:
 
 	Vertex<T> *orig = NULL; 	// Fp07
 	Vertex<T> * dest = NULL;      // destination vertex
+	vector<Vertex<T>*> processedEdge;
 
+	//Edge(Vertex<T> *o, Vertex<T> *d, double w, vector<Vertex<T>*> pE);
 	Edge(Vertex<T> *o, Vertex<T> *d, double w);
 	Edge(Vertex<T> *o, Vertex<T> *d);
 	friend class Graph<T>;
@@ -191,6 +193,14 @@ public:
 
 template <class T>
 unsigned int Edge<T>::currentEdge = 0;
+
+/*template <class T>
+Edge<T>::Edge(Vertex<T> *o, Vertex<T> *d, double w, vector<Vertex<T>*> pE) {
+	orig = o;
+	dest = d;
+	weight = w;
+	processedEdge = pE;
+}*/
 
 template <class T>
 Edge<T>::Edge(Vertex<T> *o, Vertex<T> *d, double w):weight(w),edgeId(currentEdge++) , orig(o), dest(d){}

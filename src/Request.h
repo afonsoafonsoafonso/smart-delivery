@@ -8,7 +8,7 @@
 #ifndef SRC_REQUEST_H_
 #define SRC_REQUEST_H_
 
-#include "graph.h"
+#include "Graph.h"
 
 template<class T>
 class Request{

@@ -21,7 +21,7 @@ template <class T>
 class DeliverySystem{
 
 	Graph<T> originalMap;
-	Graph<T> processedMap;
+	Graph<T> processedMap;	
 
 	vector<Vehicle<T>> vehicles;
 	vector<Request<T>> requests;
@@ -38,7 +38,10 @@ public:
 
 	void setOriginNode(T data);
 
+	void setProcessedMap();
+
 	Graph<T> * getMap();
+	Graph<T> * getProcessedMap();
 
 	void initiateRoutes(T data);
 	void initiateRoutes();
@@ -91,6 +94,29 @@ DeliverySystem<T>::DeliverySystem(Graph<T> g , unsigned int num_vehicles, T data
 template<class T>
 void DeliverySystem<T>::setOriginNode(T data){
 	origNode = data;
+}
+
+template<class T>
+void DeliverySystem<T>::setProcessedMap() {
+	double superEdgeWeight;
+	vector<T> intPoints = getInterestPoints();
+	vector<Vertex<T>*> path; 
+	//first we add all interest points as vertexes to the
+	//processed map
+	for(int i=0;i<intPoints.size(); i++) {
+		processedMap.addVertex(intPoints.at(i));
+	}
+	for(int i=0; i<intPoints.size(); i++) {
+		originalMap.dijkstraShortestPath(intPoints.at(i));
+		for(int j=0; j<intPoints.size(); j++) {
+			if(i==j) continue;
+			path = originalMap.getPathV(intPoints.at(i),intPoints.at(j));
+			for(int k=0, superEdgeWeight=0; k<path.size()-1; k++) {
+				superEdgeWeight += path.at(k)->getEdgeWeight(path.at(k+1));//(path.at(k)-,path.at(k+1)->info);
+			}
+			processedMap.addEdge(path.at(i)->getInfo(), path.at(j)->getInfo(), superEdgeWeight);
+		}
+	}
 }
 
 template<class T>
