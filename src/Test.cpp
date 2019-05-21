@@ -344,7 +344,7 @@ int main(int argc, char const *argv[]) {
 
 	DeliverySystem<int> ds(graph , 3 , 0);
 
-	//ds.addRequest(Request<int>(1 , 3 , "nenhuma"));
+	ds.addRequest(Request<int>(1 , 3 , "nenhuma"));
 	ds.addRequest(Request<int>(4 , 2 , "nenhuma"));
 	ds.addRequest(Request<int>(6 , 3 , "nenhuma"));
 
@@ -357,8 +357,8 @@ int main(int argc, char const *argv[]) {
 	cout << "Teste2\n" ;
 	ds.setProcessedMap();
 	cout << "Teste3\n" ;
-	GraphViewer *gv = generateProcessedGraphViewer(ds);
-	//GraphViewer *gv = generateOriginalGraphViewer(ds);
+	//GraphViewer *gv = generateProcessedGraphViewer(ds);
+	GraphViewer *gv = generateOriginalGraphViewer(ds);
 	//ds.initiateRoutes();
 	//ds.newAlgorithm();
 

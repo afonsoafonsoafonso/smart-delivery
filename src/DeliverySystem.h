@@ -101,44 +101,22 @@ void DeliverySystem<T>::setOriginNode(T data){
 
 template<class T>
 void DeliverySystem<T>::setProcessedMap() {
-	double superEdgeWeight = 0;
 	vector<T> intPoints = getInterestPoints();
 	intPoints.push_back(origNode);
 	vector<Vertex<T>*> path; 
-	//first we add all interest points as vertexes to the
-	//processed map
-
-	//for(unsigned int i = 0; i < intPoints.size();i++)
-		//cout<<intPoints[i]<<endl;
-
 
 	for(unsigned int i=0;i<intPoints.size(); i++) {
 		processedMap.addVertex(intPoints.at(i));
 	}
-	//cout<<"a"<<endl;
+
 	for(unsigned int i=0; i<intPoints.size(); i++) {
 		originalMap.dijkstraShortestPath(intPoints.at(i));
-		//cout<<"c"<<endl;
 		for(unsigned int j=0; j<intPoints.size(); j++) {
-			superEdgeWeight = 0;
-			//if(i==j) continue;
 			path = originalMap.getPathV(intPoints.at(i),intPoints.at(j));
-			if(path.size() == 0)
-				continue;
-			for(unsigned int k=1; k<path.size(); k++) {
-				superEdgeWeight += path.at(k-1)->getEdgeWeight(path.at(k));//(path.at(k)-,path.at(k+1)->info);
-				//superEdgeWeight += originalMap.getWeight(path.at(k)->getInfo() , path.at(k+1)->getInfo());
-			}
-			//cout<<superEdgeWeight<<endl;
-			processedMap.addEdge(intPoints.at(i), intPoints.at(j), superEdgeWeight);
-			//cout <<"b" << endl;
+			if(path.size() == 0) continue;
+			processedMap.addProcessedEdge(intPoints.at(i), intPoints.at(j), path);
 		}
-		//cout<<"d"<<endl;
 	}
-	vector<Vertex<T> *> v = processedMap.getVertexSet();
-	for(unsigned int i = 0; i < v.size();i++)
-		cout<<v[i]->getInfo()<<endl;
-
 }
 
 template<class T>
@@ -181,12 +159,21 @@ double DeliverySystem<T>::getMin(vector<T> &v , size_t pos , T value){
 	double min = INF;
 	double dist = 0;
 	vector<T> t;
-	cout<<endl;
+	//cout<<endl;
 	for(size_t i = pos+1; i < v.size();i++){
-		cout<<v[i]<<" -> ";
+		if(v[i] == value){
+			v.erase(v.begin() + i);
+			for(size_t a = 0 ; a < requests.size();a++){
+				if(requests[a].getFim() == value){
+					for(size_t b = i; b < v.size();b++){
+						if(v[b] == requests[a].getInicio()){
+							pos = b;
+						}
+					}
+				}
+			}
+		}
 	}
-	cout<< "  =  ";
-
 	for(size_t i = pos+1; i < v.size();i++){
 		vector<T> temp = v;
 		temp.insert(temp.begin() + i,value);
@@ -205,10 +192,10 @@ double DeliverySystem<T>::getMin(vector<T> &v , size_t pos , T value){
 		t = temp;
 	}
 	v = t;
-	for(size_t i = pos+1; i < v.size();i++){
+	/*for(size_t i = pos+1; i < v.size();i++){
 		cout<<v[i]<<" -> ";
 	}
-	cout<<endl;
+	cout<<endl;*/
 	//cout<<"\n\nNUM_ITER : " << iter<<"\n\n"<<endl;
 	return dist;
 }
@@ -307,8 +294,24 @@ vector<vector<T>> DeliverySystem<T>::newAlgorithm2(){
 
 	vector<vector<T>> paths;
 
-	for(unsigned int a = 0; a < vehicles.size();a++)
-		paths.push_back(vehicles[a].getPath());
+	for(unsigned int a = 0; a < vehicles.size();a++){
+		vector<T> p = vehicles[a].getPath();
+		vector<T> path;
+		for(size_t b = 1; b < p.size();b++){
+			//cout<<p[b-1]<<" -> " << p[b] << "  :  ";
+			vector<Vertex<T> *> subs = processedMap.findVertex(p[b-1])->getProcessedEdge(processedMap.findVertex(p[b]));
+			if(path.size()>0)
+				path.pop_back();
+			for(size_t c = 0; c < subs.size();c++){
+				path.push_back(subs[c]->getInfo());
+			}
+			//cout<<p[b]<<endl;
+			//cout<<endl;
+		}
+		path.insert(path.begin(),origNode);
+		path.push_back(origNode);
+		paths.push_back(path);
+	}
 
 	for(unsigned int a = 0; a < paths.size();a++){
 		for(unsigned int b= 0; b < paths[a].size();b++){
@@ -331,7 +334,7 @@ template<class T>
 void DeliverySystem<T>::initiateRoutes(){
 	originalMap.dijkstraShortestPath(origNode);
 	vector<T> path = {1,2,3};
-	cout<<calculatePathWeight(path)<<endl;
+	//cout<<calculatePathWeight(path)<<endl;
 }
 template<class T>
 vector<Vertex<T> *> DeliverySystem<T>::getPath(T destNode){
