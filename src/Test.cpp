@@ -13,6 +13,9 @@
 #include "DeliverySystem.h"
 #include "Graph.h"
 
+#define VERTEXNORMALCOLOR "BLUE"
+#define VERTEXPATHCOLOR "RED"
+
 Graph<int> readFromFile(string city){
 
 	string line;
@@ -241,7 +244,7 @@ GraphViewer * generateGraphViewer(Graph<T> *graph){
 
 	gv->createWindow(600, 600);
 
-	gv->defineVertexColor("blue");
+	gv->defineVertexColor(VERTEXNORMALCOLOR);
 	gv->defineEdgeColor("black");
 
 	for(unsigned int i = 0; i<v.size();i++){
@@ -298,7 +301,7 @@ GraphViewer* generateProcessedGraphViewer(DeliverySystem<T> ds) {
 template<class T>
 void showPath( vector<Vertex<T> *> v , GraphViewer * gv){
 	for(unsigned int i = 0; i < v.size();i++){
-		gv->setVertexColor(v[i]->getInfo(),"RED");
+		gv->setVertexColor(v[i]->getInfo(),VERTEXPATHCOLOR);
 		gv->rearrange();
 #ifdef linux
 		sleep(1000);
@@ -312,13 +315,25 @@ template<class T>
 void showPath( vector<T> v , GraphViewer * gv){
 	for(unsigned int i = 0; i < v.size();i++){
 		cout<<v[i]<<endl;
-		gv->setVertexColor(v[i],"RED");
+		gv->setVertexColor(v[i],VERTEXPATHCOLOR);
 		gv->rearrange();
 #ifdef linux
 		sleep(1000);
 #else
 		Sleep(1000);
 #endif
+	}
+}
+
+template<class T>
+void showPath( vector<vector<T>> v , GraphViewer * gv){
+	for(size_t i = 0; i < v.size() ; i++){
+		vector<T> path = v[i];
+		showPath(path , gv);
+		for(unsigned int a = 0; a < path.size();a++){
+			gv->setVertexColor(path[a],VERTEXNORMALCOLOR);
+		}
+		gv->rearrange();
 	}
 }
 
@@ -362,7 +377,7 @@ int main(int argc, char const *argv[]) {
 	//ds.initiateRoutes();
 	//ds.newAlgorithm();
 
-	ds.newAlgorithm2();
+	showPath(ds.newAlgorithm2(),gv);
 
 	cout << "Teste4\n" ;
 
