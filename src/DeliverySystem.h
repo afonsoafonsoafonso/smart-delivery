@@ -125,10 +125,6 @@ template <class T> void DeliverySystem<T>::initiateRoutes(T data) {
   originalMap.dijkstraShortestPath(data);
 }
 
-template <class T> void DeliverySystem<T>::initiateRoutes(T data) {
-  originalMap.dijkstraShortestPath(data);
-}
-
 template <class T>
 double DeliverySystem<T>::calculatePathWeight(vector<T> path) {
   double dist = 0;
@@ -140,61 +136,112 @@ double DeliverySystem<T>::calculatePathWeight(vector<T> path) {
   }
   dist += originalMap.getWeight(path[path.size() - 1], origNode);
   return dist;
-  template <class T> double DeliverySystem<T>::calculateVehiclesWeight() {
-    double dist = 0;
-    for (unsigned int i = 0; i < vehicles.size(); i++) {
-      double temp = calculatePathWeight(vehicles[i].getPath());
-      if (temp == 0)
-        return dist;
-      dist += temp;
-    }
-    return dist;
-  }
+}
 
-  template <class T> double DeliverySystem<T>::calculateVehiclesWeight() {
-    double dist = 0;
-    for (unsigned int i = 0; i < vehicles.size(); i++)
-      dist += calculatePathWeight(vehicles[i].getPath());
-    return dist;
+template <class T> double DeliverySystem<T>::calculateVehiclesWeight() {
+  double dist = 0;
+  for (unsigned int i = 0; i < vehicles.size(); i++) {
+    double temp = calculatePathWeight(vehicles[i].getPath());
+    if (temp == 0)
+      return dist;
+    dist += temp;
   }
+  return dist;
+}
 
-  template <class T>
-  double DeliverySystem<T>::getMin(vector<T> & v, size_t pos, T value) {
-    // int iter = 0;
-    double min = INF;
-    vector<T> t;
-    for (size_t i = pos + 1; i < v.size(); i++) {
-      vector<T> temp = v;
-      temp.insert(temp.begin() + i, value);
-      double dist = calculatePathWeight(temp);
-      if (dist < min) {
-        min = dist;
-        t = temp;
-      }
-      // iter++;
-    }
+// template <class T> double DeliverySystem<T>::calculateVehiclesWeight() {
+//   double dist = 0;
+//   for (unsigned int i = 0; i < vehicles.size(); i++)
+//     dist += calculatePathWeight(vehicles[i].getPath());
+//   return dist;
+// }
+
+template <class T>
+double DeliverySystem<T>::getMin(vector<T> &v, size_t pos, T value) {
+  // int iter = 0;
+  double min = INF;
+  vector<T> t;
+  for (size_t i = pos + 1; i < v.size(); i++) {
     vector<T> temp = v;
-    temp.push_back(value);
+    temp.insert(temp.begin() + i, value);
     double dist = calculatePathWeight(temp);
     if (dist < min) {
       min = dist;
       t = temp;
     }
-    v = t;
-    // cout<<"\n\nNUM_ITER : " << iter<<"\n\n"<<endl;
-    return dist;
+    // iter++;
   }
+  vector<T> temp = v;
+  temp.push_back(value);
+  double dist = calculatePathWeight(temp);
+  if (dist < min) {
+    min = dist;
+    t = temp;
+  }
+  v = t;
+  // cout<<"\n\nNUM_ITER : " << iter<<"\n\n"<<endl;
+  return dist;
+}
 
-  template <class T> vector<T> DeliverySystem<T>::newAlgorithm() {
-    vector<T> v;
-    // int iter = 0;
-    for (unsigned int r = 0; r < requests.size(); r++) {
+template <class T> vector<T> DeliverySystem<T>::newAlgorithm() {
+  vector<T> v;
+  // int iter = 0;
+  for (unsigned int r = 0; r < requests.size(); r++) {
+
+    double min = INF;
+    vector<T> next;
+    for (unsigned int a = 0; a < v.size(); a++) {
+      vector<T> temp = v;
+      temp.insert(temp.begin() + a, requests[r].getInicio());
+      if (calculatePathWeight(temp) > min)
+        continue;
+      double dist = getMin(temp, a, requests[r].getFim());
+      if (dist < min) {
+        min = dist;
+        next = temp;
+      }
+      // iter++;
+    }
+    vector<T> temp = v;
+    temp.push_back(requests[r].getInicio());
+    temp.push_back(requests[r].getFim());
+    double dist = calculatePathWeight(temp);
+    if (dist < min) {
+      min = dist;
+      next = temp;
+    }
+    v = next;
+  }
+  cout << "1 : " << calculatePathWeight(v) << endl;
+  v.insert(v.begin(), origNode);
+  v.push_back(origNode);
+  // cout<<"\n\nNUM_ITER : " << iter<<"\n\n"<<endl;
+  return v;
+}
+
+template <class T> vector<vector<T>> DeliverySystem<T>::newAlgorithm2() {
+
+  // Reset vehicles
+  for (unsigned int a = 0; a < vehicles.size(); a++)
+    vehicles.at(a).reset();
+
+  for (unsigned int r = 0; r < requests.size(); r++) {
+
+    unsigned int min_vehicle = -1;
+    double min_dist = INF;
+    vector<T> min_path;
+
+    for (unsigned int b = 0; b < vehicles.size(); b++) {
+
+      vector<T> path = vehicles.at(b).getPath();
 
       double min = INF;
       vector<T> next;
-      for (unsigned int a = 0; a < v.size(); a++) {
-        vector<T> temp = v;
+
+      for (unsigned int a = 0; a < path.size(); a++) {
+        vector<T> temp = path;
         temp.insert(temp.begin() + a, requests[r].getInicio());
+        vehicles.at(b).setPath(temp);
         if (calculatePathWeight(temp) > min)
           continue;
         double dist = getMin(temp, a, requests[r].getFim());
@@ -202,9 +249,8 @@ double DeliverySystem<T>::calculatePathWeight(vector<T> path) {
           min = dist;
           next = temp;
         }
-        // iter++;
       }
-      vector<T> temp = v;
+      vector<T> temp = path;
       temp.push_back(requests[r].getInicio());
       temp.push_back(requests[r].getFim());
       double dist = calculatePathWeight(temp);
@@ -212,125 +258,74 @@ double DeliverySystem<T>::calculatePathWeight(vector<T> path) {
         min = dist;
         next = temp;
       }
-      v = next;
-    }
-    cout << "1 : " << calculatePathWeight(v) << endl;
-    v.insert(v.begin(), origNode);
-    v.push_back(origNode);
-    // cout<<"\n\nNUM_ITER : " << iter<<"\n\n"<<endl;
-    return v;
-  }
+      vehicles.at(b).setPath(next);
 
-  template <class T> vector<vector<T>> DeliverySystem<T>::newAlgorithm2() {
+      dist = calculateVehiclesWeight();
 
-    // Reset vehicles
-    for (unsigned int a = 0; a < vehicles.size(); a++)
-      vehicles.at(a).reset();
-
-    for (unsigned int r = 0; r < requests.size(); r++) {
-
-      unsigned int min_vehicle = -1;
-      double min_dist = INF;
-      vector<T> min_path;
-
-      for (unsigned int b = 0; b < vehicles.size(); b++) {
-
-        vector<T> path = vehicles.at(b).getPath();
-
-        double min = INF;
-        vector<T> next;
-
-        for (unsigned int a = 0; a < path.size(); a++) {
-          vector<T> temp = path;
-          temp.insert(temp.begin() + a, requests[r].getInicio());
-          vehicles.at(b).setPath(temp);
-          if (calculatePathWeight(temp) > min)
-            continue;
-          double dist = getMin(temp, a, requests[r].getFim());
-          if (dist < min) {
-            min = dist;
-            next = temp;
-          }
-        }
-        vector<T> temp = path;
-        temp.push_back(requests[r].getInicio());
-        temp.push_back(requests[r].getFim());
-        double dist = calculatePathWeight(temp);
-        if (dist < min) {
-          min = dist;
-          next = temp;
-        }
-        vehicles.at(b).setPath(next);
-
-        dist = calculateVehiclesWeight();
-
-        if (dist < min_dist) {
-          min_dist = dist;
-          min_vehicle = b;
-          min_path = next;
-        }
-        vehicles.at(b).setPath(path);
+      if (dist < min_dist) {
+        min_dist = dist;
+        min_vehicle = b;
+        min_path = next;
       }
-
-      vehicles.at(min_vehicle).setPath(min_path);
+      vehicles.at(b).setPath(path);
     }
 
-    vector<vector<T>> paths;
+    vehicles.at(min_vehicle).setPath(min_path);
+  }
 
-    for (unsigned int a = 0; a < vehicles.size(); a++)
-      paths.push_back(vehicles[a].getPath());
+  vector<vector<T>> paths;
 
-    for (unsigned int a = 0; a < paths.size(); a++) {
-      for (unsigned int b = 0; b < paths[a].size(); b++) {
-        cout << paths[a][b] << " -> ";
-      }
-      cout << endl;
+  for (unsigned int a = 0; a < vehicles.size(); a++)
+    paths.push_back(vehicles[a].getPath());
+
+  for (unsigned int a = 0; a < paths.size(); a++) {
+    for (unsigned int b = 0; b < paths[a].size(); b++) {
+      cout << paths[a][b] << " -> ";
     }
-
-    cout << "2 : " << calculateVehiclesWeight() << endl;
-
-    return paths;
+    cout << endl;
   }
 
-  template <class T> void DeliverySystem<T>::initiateRoutes() {
-    originalMap.dijkstraShortestPath(origNode);
-    vector<T> path = {1, 2, 3};
-    cout << calculatePathWeight(path) << endl;
-  }
-  template <class T>
-  vector<Vertex<T> *> DeliverySystem<T>::getPath(T destNode) {
-    return originalMap.getPathV(origNode, destNode);
-  }
+  cout << "2 : " << calculateVehiclesWeight() << endl;
 
-  template <class T> vector<Request<T>> DeliverySystem<T>::getRequests() const {
-    return requests;
-  }
-  template <class T> void DeliverySystem<T>::addRequest(Request<T> r) {
-    requests.push_back(r);
-  }
-  template <class T>
-  void DeliverySystem<T>::addRequests(vector<Request<T>> vr) {
-    requests.append(vr);
-  }
-  template <class T>
-  void DeliverySystem<T>::setRequests(vector<Request<T>> vr) {
-    requests = vr;
-  }
+  return paths;
+}
 
-  template <class T> vector<T> DeliverySystem<T>::getPickupPoints() const {
-    vector<T> v;
-    for (unsigned int i = 0; i < requests.size(); i++)
-      v.push_back(requests[i].getInicio());
-    return v;
-  }
-  template <class T> vector<T> DeliverySystem<T>::getDeliverPoints() const {
-    vector<T> v;
-    for (unsigned int i = 0; i < requests.size(); i++)
-      v.push_back(requests[i].getFim());
-    return v;
-  }
-  template <class T> vector<T> DeliverySystem<T>::getInterestPoints() const {
-    return getPickupPoints().append(getDeliverPoints());
-  }
+template <class T> void DeliverySystem<T>::initiateRoutes() {
+  originalMap.dijkstraShortestPath(origNode);
+  vector<T> path = {1, 2, 3};
+  cout << calculatePathWeight(path) << endl;
+}
+template <class T> vector<Vertex<T> *> DeliverySystem<T>::getPath(T destNode) {
+  return originalMap.getPathV(origNode, destNode);
+}
+
+template <class T> vector<Request<T>> DeliverySystem<T>::getRequests() const {
+  return requests;
+}
+template <class T> void DeliverySystem<T>::addRequest(Request<T> r) {
+  requests.push_back(r);
+}
+template <class T> void DeliverySystem<T>::addRequests(vector<Request<T>> vr) {
+  requests.append(vr);
+}
+template <class T> void DeliverySystem<T>::setRequests(vector<Request<T>> vr) {
+  requests = vr;
+}
+
+template <class T> vector<T> DeliverySystem<T>::getPickupPoints() const {
+  vector<T> v;
+  for (unsigned int i = 0; i < requests.size(); i++)
+    v.push_back(requests[i].getInicio());
+  return v;
+}
+template <class T> vector<T> DeliverySystem<T>::getDeliverPoints() const {
+  vector<T> v;
+  for (unsigned int i = 0; i < requests.size(); i++)
+    v.push_back(requests[i].getFim());
+  return v;
+}
+template <class T> vector<T> DeliverySystem<T>::getInterestPoints() const {
+  return getPickupPoints().append(getDeliverPoints());
+}
 
 #endif
