@@ -60,6 +60,8 @@ public:
 	vector<T> getDeliverPoints() const;
 	vector<T> getInterestPoints() const;
 
+	vector<vector<T>> getVehiclesPath() const;
+
 
 };
 
@@ -125,8 +127,10 @@ void DeliverySystem<T>::setProcessedMap() {
 			for(unsigned int i = 0; i < path.size();i++)
 					cout<<path[i]->getInfo()<<endl;
 			cout<<endl;
-			for(int k=0; k<path.size()-1; k++) {
-				superEdgeWeight += path.at(k)->getEdgeWeight(path.at(k+1));//(path.at(k)-,path.at(k+1)->info);
+			if(path.size() == 0)
+				continue;
+			for(unsigned int k=1; k<path.size(); k++) {
+				superEdgeWeight += path.at(k-1)->getEdgeWeight(path.at(k));//(path.at(k)-,path.at(k+1)->info);
 				//superEdgeWeight += originalMap.getWeight(path.at(k)->getInfo() , path.at(k+1)->getInfo());
 			}
 			cout<<superEdgeWeight<<endl;
@@ -157,11 +161,11 @@ double DeliverySystem<T>::calculatePathWeight(vector<T> path){
 	double dist = 0;
 	if(path.size() == 0)
 		return dist;
-	dist+=originalMap.getWeight(origNode , path[0]);
+	dist+=processedMap.getWeight(origNode , path[0]);
 	for(unsigned int i = 0; i < path.size()-1 ; i++){
-		dist+=originalMap.getWeight(path[i] , path[i+1]);
+		dist+=processedMap.getWeight(path[i] , path[i+1]);
 	}
-	dist+=originalMap.getWeight(path[path.size()-1] , origNode);
+	dist+=processedMap.getWeight(path[path.size()-1] , origNode);
 	return dist;
 }
 
@@ -170,8 +174,6 @@ double DeliverySystem<T>::calculateVehiclesWeight(){
 	double dist = 0;
 	for(unsigned int i = 0; i < vehicles.size();i++){
 		double temp = calculatePathWeight(vehicles[i].getPath());
-		if(temp == 0)
-			return dist;
 		dist+=temp;
 	}
 	return dist;
@@ -303,9 +305,9 @@ vector<vector<T>> DeliverySystem<T>::newAlgorithm2(){
 
 	for(unsigned int a = 0; a < paths.size();a++){
 		for(unsigned int b= 0; b < paths[a].size();b++){
-			//cout<<paths[a][b]<< " -> ";
+			cout<<paths[a][b]<< " -> ";
 		}
-		//cout<<endl;
+		cout<<endl;
 	}
 
 	cout<<"2 : " << calculateVehiclesWeight()<<endl;
@@ -360,5 +362,15 @@ vector<T> DeliverySystem<T>::getInterestPoints() const{
 		v.push_back(v1[i]);
 	return v;
 }
+
+template<class T>
+vector<vector<T>> DeliverySystem<T>::getVehiclesPath() const{
+	vector<vector<T>> paths;
+	for(unsigned int i = 0; i < vehicles.size();i++){
+		paths.push_back(vehicles[i].getPath());
+	}
+	return paths;
+}
+
 
 #endif

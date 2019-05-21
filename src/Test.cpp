@@ -209,7 +209,7 @@ Graph<int> createGraph5() {
 	myGraph.addEdge(0,1);
 	myGraph.addEdge(0,3);
 	myGraph.addEdge(1,2);
-	//myGraph.addEdge(1,3);
+	myGraph.addEdge(1,4);
 	myGraph.addEdge(3,1);
 	myGraph.addEdge(4,2);
 	myGraph.addEdge(2,3);
@@ -315,6 +315,17 @@ void showPath( vector<T> v , GraphViewer * gv){
 	}
 }
 
+template<class T>
+void printPaths(vector<vector<T>> paths){
+	for(unsigned int i = 0; i < paths.size() ; i++){
+		for(unsigned int a = 0; a < paths[i].size();a++){
+			cout<<paths[a][i]<<"->";
+		}
+		cout<<endl;
+	}
+}
+
+
 int main(int argc, char const *argv[]) {
 
 	cout << "Teste1\n" ;
@@ -324,7 +335,7 @@ int main(int argc, char const *argv[]) {
 
 	//Graph<int> graph = readFromFile("Aveiro");
 
-	DeliverySystem<int> ds(graph , 1 , 0);
+	DeliverySystem<int> ds(graph , 2 , 0);
 
 	ds.addRequest(Request<int>(1 , 3 , "nenhuma"));
 	ds.addRequest(Request<int>(4 , 2 , "nenhuma"));
@@ -339,12 +350,18 @@ int main(int argc, char const *argv[]) {
 	cout << "Teste2\n" ;
 	ds.setProcessedMap();
 	cout << "Teste3\n" ;
-	GraphViewer *gv = generateProcessedGraphViewer(ds);
-	//GraphViewer *gv = generateOriginalGraphViewer(ds);
+	//GraphViewer *gv = generateProcessedGraphViewer(ds);
+	GraphViewer *gv = generateOriginalGraphViewer(ds);
 	//ds.initiateRoutes();
 	//ds.newAlgorithm();
 
-	//ds.newAlgorithm2();
+	ds.newAlgorithm2();
+
+	cout << "Teste4\n" ;
+
+	//printPaths(ds.getVehiclesPath());
+
+	cout << "Teste5\n" ;
 
 	//showPath(ds.newAlgorithm() , gv);
 
