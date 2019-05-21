@@ -1,6 +1,7 @@
 //#include "src/options/Option.h"
 #include "Request.h"
 #include "Vehicle.h"
+#include "utils.cpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -45,7 +46,7 @@ int get_node_info() {
   return id;
 }
 
-void get_vehicle_info(Vehicle<string> vehicle) {
+void get_vehicle_info(Vehicle<int> vehicle) {
   string specialty;
   cout << "What is the type of vehicle? ";
   cin.clear();
@@ -69,11 +70,20 @@ Request<int> get_request() {
   return request;
 }
 
+string get_city() {
+  string city;
+  cout << "Insert the name of the city (in Portugal): ";
+  getline(cin, city);
+  return city;
+}
+
 int main() {
   string specialty;
   float latitude, longitude;
-  vector<Request<int>> requests;
-  vector<Vehicle<string>> vehicles;
+  vector<Vehicle<int>> vehicles;
+
+  Graph<int> graph;
+  DeliverySystem<int> ds(graph, 0);
 
   cout << "Welcome!" << endl;
 
@@ -82,18 +92,29 @@ int main() {
     int option = get_option();
 
     switch (option) {
-      case 2: {
-        Vehicle<string> vehicle;
-        get_vehicle_info(vehicle);
-        vehicles.push_back(vehicle);
-        cout << endl << "»----------------------------------«" << endl << endl;
-        break;
-      }
-      case 3: {
-        requests.push_back(get_request());
-        cout << endl << "»----------------------------------«" << endl << endl;
-        break;
-      }
+    case 1: {
+      break;
+    }
+    case 2: {
+      Vehicle<int> vehicle;
+      get_vehicle_info(vehicle);
+      ds.addVehicle(vehicle);
+      cout << endl << "»----------------------------------«" << endl << endl;
+      break;
+    }
+    case 3: {
+      Request<int> request = get_request();
+      ds.addRequest(request);
+      cout << endl << "»----------------------------------«" << endl << endl;
+      break;
+    }
+    case 4: {
+      cin.clear();
+      cin.ignore(999999, '\n');
+      string city = get_city();
+      graph = readFromFile(city);
+      break;
+    }
     }
   }
 }
