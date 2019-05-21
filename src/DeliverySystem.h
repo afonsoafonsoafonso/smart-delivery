@@ -121,11 +121,11 @@ void DeliverySystem<T>::setProcessedMap() {
 			superEdgeWeight = 0;
 			if(i==j) continue;
 			path = originalMap.getPathV(intPoints.at(i),intPoints.at(j));
-			//cout<<endl;
-			//for(unsigned int i = 0; i < path.size();i++)
-					//cout<<path[i]->getInfo()<<endl;
-			//cout<<endl;
-			for(unsigned int k=0; k<path.size()-1; k++) {
+			cout<<endl;
+			for(unsigned int i = 0; i < path.size();i++)
+					cout<<path[i]->getInfo()<<endl;
+			cout<<endl;
+			for(int k=0; k<path.size()-1; k++) {
 				superEdgeWeight += path.at(k)->getEdgeWeight(path.at(k+1));//(path.at(k)-,path.at(k+1)->info);
 				//superEdgeWeight += originalMap.getWeight(path.at(k)->getInfo() , path.at(k+1)->getInfo());
 			}
@@ -135,6 +135,10 @@ void DeliverySystem<T>::setProcessedMap() {
 		}
 		//cout<<"d"<<endl;
 	}
+	vector<Vertex<T> *> v = processedMap.getVertexSet();
+	for(unsigned int i = 0; i < v.size();i++)
+		cout<<v[i]->getInfo()<<endl;
+
 }
 
 template<class T>

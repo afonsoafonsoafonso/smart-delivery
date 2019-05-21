@@ -223,13 +223,19 @@ Graph<int> createGraph5() {
 template<class T>
 GraphViewer * generateGraphViewer(Graph<T> *graph){
 
-	GraphViewer *gv = new GraphViewer(600, 600,false, true);
+	vector<Vertex <T> *> v = graph->getVertexSet();
+
+	if(v.size()==0)
+		return nullptr;
+
+
+
+	GraphViewer *gv = new GraphViewer(600, 600,!v[0]->hasPosition(), true);
+
 	gv->createWindow(600, 600);
 
 	gv->defineVertexColor("blue");
 	gv->defineEdgeColor("black");
-
-	vector<Vertex <T> *> v = graph->getVertexSet();
 
 	for(unsigned int i = 0; i<v.size();i++){
 
@@ -321,7 +327,7 @@ int main(int argc, char const *argv[]) {
 	DeliverySystem<int> ds(graph , 1 , 0);
 
 	ds.addRequest(Request<int>(1 , 3 , "nenhuma"));
-	//ds.addRequest(Request<int>(4 , 2 , "nenhuma"));
+	ds.addRequest(Request<int>(4 , 2 , "nenhuma"));
 	//ds.addRequest(Request<int>(4 , 6 , "nenhuma"));
 
 	//ds.addRequest(Request<int>(1 , 5 , "nenhuma"));
@@ -330,9 +336,9 @@ int main(int argc, char const *argv[]) {
 
 	//para compilar e continuar a testar restantes features
 	//basta comentar o uso deste método
-
+	cout << "Teste2\n" ;
 	ds.setProcessedMap();
-
+	cout << "Teste3\n" ;
 	GraphViewer *gv = generateProcessedGraphViewer(ds);
 	//GraphViewer *gv = generateOriginalGraphViewer(ds);
 	//ds.initiateRoutes();
