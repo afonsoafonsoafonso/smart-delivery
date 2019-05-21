@@ -38,7 +38,7 @@ template <class T>
 struct hhashEdge {
 	int operator() (const Edge<T> &e1) const  {
 		hash<T> hash_T;
-		return hash_T((int)e1.orig + (int)e1.dest);
+		return hash_T(e1.orig->getInfo() + e1.dest->getInfo());
 	}
 };
 
