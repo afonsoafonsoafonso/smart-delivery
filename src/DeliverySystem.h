@@ -121,19 +121,15 @@ void DeliverySystem<T>::setProcessedMap() {
 		//cout<<"c"<<endl;
 		for(unsigned int j=0; j<intPoints.size(); j++) {
 			superEdgeWeight = 0;
-			if(i==j) continue;
+			//if(i==j) continue;
 			path = originalMap.getPathV(intPoints.at(i),intPoints.at(j));
-			cout<<endl;
-			for(unsigned int i = 0; i < path.size();i++)
-					cout<<path[i]->getInfo()<<endl;
-			cout<<endl;
 			if(path.size() == 0)
 				continue;
 			for(unsigned int k=1; k<path.size(); k++) {
 				superEdgeWeight += path.at(k-1)->getEdgeWeight(path.at(k));//(path.at(k)-,path.at(k+1)->info);
 				//superEdgeWeight += originalMap.getWeight(path.at(k)->getInfo() , path.at(k+1)->getInfo());
 			}
-			cout<<superEdgeWeight<<endl;
+			//cout<<superEdgeWeight<<endl;
 			processedMap.addEdge(intPoints.at(i), intPoints.at(j), superEdgeWeight);
 			//cout <<"b" << endl;
 		}
@@ -183,11 +179,18 @@ template<class T>
 double DeliverySystem<T>::getMin(vector<T> &v , size_t pos , T value){
 	//int iter = 0;
 	double min = INF;
+	double dist = 0;
 	vector<T> t;
+	cout<<endl;
+	for(size_t i = pos+1; i < v.size();i++){
+		cout<<v[i]<<" -> ";
+	}
+	cout<< "  =  ";
+
 	for(size_t i = pos+1; i < v.size();i++){
 		vector<T> temp = v;
 		temp.insert(temp.begin() + i,value);
-		double dist = calculatePathWeight(temp);
+		dist = calculatePathWeight(temp);
 		if(dist < min){
 			min = dist;
 			t = temp;
@@ -196,12 +199,16 @@ double DeliverySystem<T>::getMin(vector<T> &v , size_t pos , T value){
 	}
 	vector<T> temp = v;
 	temp.push_back(value);
-	double dist = calculatePathWeight(temp);
+	dist = calculatePathWeight(temp);
 	if(dist < min){
 		min = dist;
 		t = temp;
 	}
 	v = t;
+	for(size_t i = pos+1; i < v.size();i++){
+		cout<<v[i]<<" -> ";
+	}
+	cout<<endl;
 	//cout<<"\n\nNUM_ITER : " << iter<<"\n\n"<<endl;
 	return dist;
 }

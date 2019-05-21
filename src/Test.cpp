@@ -205,6 +205,8 @@ Graph<int> createGraph5() {
 	myGraph.addVertex(2,1,3);
 	myGraph.addVertex(3,-3,-2);
 	myGraph.addVertex(4,-7,-4);
+	myGraph.addVertex(5,-4,3);
+	myGraph.addVertex(6,10,1);
 
 	myGraph.addEdge(0,1);
 	myGraph.addEdge(0,3);
@@ -214,6 +216,11 @@ Graph<int> createGraph5() {
 	myGraph.addEdge(4,2);
 	myGraph.addEdge(2,3);
 	myGraph.addEdge(3,0);
+	myGraph.addEdge(6,3);
+	myGraph.addEdge(5,4);
+	myGraph.addEdge(4,5);
+	myGraph.addEdge(5,6);
+	myGraph.addEdge(2,0);
 
 	return myGraph;
 }
@@ -335,11 +342,11 @@ int main(int argc, char const *argv[]) {
 
 	//Graph<int> graph = readFromFile("Aveiro");
 
-	DeliverySystem<int> ds(graph , 2 , 0);
+	DeliverySystem<int> ds(graph , 3 , 0);
 
-	ds.addRequest(Request<int>(1 , 3 , "nenhuma"));
+	//ds.addRequest(Request<int>(1 , 3 , "nenhuma"));
 	ds.addRequest(Request<int>(4 , 2 , "nenhuma"));
-	//ds.addRequest(Request<int>(4 , 6 , "nenhuma"));
+	ds.addRequest(Request<int>(6 , 3 , "nenhuma"));
 
 	//ds.addRequest(Request<int>(1 , 5 , "nenhuma"));
 	//ds.addRequest(Request<int>(2 , 6 , "nenhuma"));
@@ -350,8 +357,8 @@ int main(int argc, char const *argv[]) {
 	cout << "Teste2\n" ;
 	ds.setProcessedMap();
 	cout << "Teste3\n" ;
-	//GraphViewer *gv = generateProcessedGraphViewer(ds);
-	GraphViewer *gv = generateOriginalGraphViewer(ds);
+	GraphViewer *gv = generateProcessedGraphViewer(ds);
+	//GraphViewer *gv = generateOriginalGraphViewer(ds);
 	//ds.initiateRoutes();
 	//ds.newAlgorithm();
 
