@@ -209,10 +209,10 @@ Graph<int> createGraph5() {
 	myGraph.addEdge(0,1);
 	myGraph.addEdge(0,3);
 	myGraph.addEdge(1,2);
-	myGraph.addEdge(1,3);
+	//myGraph.addEdge(1,3);
 	myGraph.addEdge(3,1);
 	myGraph.addEdge(4,2);
-	myGraph.addEdge(2,4);
+	myGraph.addEdge(2,3);
 	myGraph.addEdge(3,0);
 
 	return myGraph;
@@ -265,9 +265,18 @@ void setDeliveries(vector<T> v, GraphViewer * gv){
 }
 
 template<class T>
-GraphViewer * generateGraphViewer(DeliverySystem<T> ds){
+GraphViewer * generateOriginalGraphViewer(DeliverySystem<T> ds){
 	GraphViewer * gv = generateGraphViewer(ds.getMap());
 	setPickups(ds.getPickupPoints() , gv);
+	setDeliveries(ds.getDeliverPoints() , gv);
+	gv->rearrange();
+	return gv;
+}
+
+template<class T>
+GraphViewer* generateProcessedGraphViewer(DeliverySystem<T> ds) {
+	GraphViewer* gv = generateGraphViewer(ds.getProcessedMap());
+	setPickups(ds.getPickupPoints(), gv);
 	setDeliveries(ds.getDeliverPoints() , gv);
 	gv->rearrange();
 	return gv;
@@ -278,7 +287,11 @@ void showPath( vector<Vertex<T> *> v , GraphViewer * gv){
 	for(unsigned int i = 0; i < v.size();i++){
 		gv->setVertexColor(v[i]->getInfo(),"RED");
 		gv->rearrange();
-		//Sleep(1000);
+#ifdef linux
+		sleep(1000);
+#else
+		Sleep(1000);
+#endif
 	}
 }
 
@@ -288,7 +301,11 @@ void showPath( vector<T> v , GraphViewer * gv){
 		cout<<v[i]<<endl;
 		gv->setVertexColor(v[i],"RED");
 		gv->rearrange();
-		//Sleep(1000);
+#ifdef linux
+		sleep(1000);
+#else
+		Sleep(1000);
+#endif
 	}
 }
 
@@ -298,14 +315,14 @@ int main(int argc, char const *argv[]) {
 
 	Graph<int> graph = createGraph5();
 
+
 	//Graph<int> graph = readFromFile("Aveiro");
 
 	DeliverySystem<int> ds(graph , 1 , 0);
-		cout << "Teste2\n" ;
 
 	ds.addRequest(Request<int>(1 , 3 , "nenhuma"));
-	ds.addRequest(Request<int>(5 , 2 , "nenhuma"));
-	ds.addRequest(Request<int>(4 , 6 , "nenhuma"));
+	//ds.addRequest(Request<int>(4 , 2 , "nenhuma"));
+	//ds.addRequest(Request<int>(4 , 6 , "nenhuma"));
 
 	//ds.addRequest(Request<int>(1 , 5 , "nenhuma"));
 	//ds.addRequest(Request<int>(2 , 6 , "nenhuma"));
@@ -313,22 +330,17 @@ int main(int argc, char const *argv[]) {
 
 	//para compilar e continuar a testar restantes features
 	//basta comentar o uso deste método
+
 	ds.setProcessedMap();
 
-	cout << "Teste3\n" ;
-
-	GraphViewer *gv = generateGraphViewer(ds);
-	cout << "Teste4\n" ;
-
+	GraphViewer *gv = generateProcessedGraphViewer(ds);
+	//GraphViewer *gv = generateOriginalGraphViewer(ds);
 	//ds.initiateRoutes();
 	//ds.newAlgorithm();
 
-	ds.newAlgorithm2();
-	cout << "Teste5\n" ;
+	//ds.newAlgorithm2();
 
-	showPath(ds.newAlgorithm() , gv);
-	cout << "Teste6\n" ;
-
+	//showPath(ds.newAlgorithm() , gv);
 
 	gv->rearrange();
 

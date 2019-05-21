@@ -77,7 +77,7 @@ DeliverySystem<T>::DeliverySystem(Graph<T> g , unsigned int num_vehicles) {
 	for(unsigned int i = 0; i < num_vehicles ;i++){
 		vehicles.push_back(Vehicle<T>("nenhuma"));
 	}
-	cout<<vehicles.size()<<endl;
+	//cout<<vehicles.size()<<endl;
 }
 template<class T>
 DeliverySystem<T>::DeliverySystem(Graph<T> g , unsigned int num_vehicles, T data){
@@ -101,27 +101,39 @@ template<class T>
 void DeliverySystem<T>::setProcessedMap() {
 	double superEdgeWeight = 0;
 	vector<T> intPoints = getInterestPoints();
+	intPoints.push_back(origNode);
 	vector<Vertex<T>*> path; 
 	//first we add all interest points as vertexes to the
 	//processed map
+
+	//for(unsigned int i = 0; i < intPoints.size();i++)
+		//cout<<intPoints[i]<<endl;
+
+
 	for(unsigned int i=0;i<intPoints.size(); i++) {
 		processedMap.addVertex(intPoints.at(i));
 	}
-	cout<<"a"<<endl;
+	//cout<<"a"<<endl;
 	for(unsigned int i=0; i<intPoints.size(); i++) {
 		originalMap.dijkstraShortestPath(intPoints.at(i));
-		cout<<"c"<<endl;
+		//cout<<"c"<<endl;
 		for(unsigned int j=0; j<intPoints.size(); j++) {
 			superEdgeWeight = 0;
 			if(i==j) continue;
 			path = originalMap.getPathV(intPoints.at(i),intPoints.at(j));
-			for(unsigned int k=0, superEdgeWeight=0; k<path.size()-1; k++) {
+			//cout<<endl;
+			//for(unsigned int i = 0; i < path.size();i++)
+					//cout<<path[i]->getInfo()<<endl;
+			//cout<<endl;
+			for(unsigned int k=0; k<path.size()-1; k++) {
 				superEdgeWeight += path.at(k)->getEdgeWeight(path.at(k+1));//(path.at(k)-,path.at(k+1)->info);
+				//superEdgeWeight += originalMap.getWeight(path.at(k)->getInfo() , path.at(k+1)->getInfo());
 			}
-			processedMap.addEdge(path.at(i)->getInfo(), path.at(j)->getInfo(), superEdgeWeight);
-			cout<<"b"<<endl;
+			cout<<superEdgeWeight<<endl;
+			processedMap.addEdge(intPoints.at(i), intPoints.at(j), superEdgeWeight);
+			//cout <<"b" << endl;
 		}
-		cout<<"d"<<endl;
+		//cout<<"d"<<endl;
 	}
 }
 
@@ -287,9 +299,9 @@ vector<vector<T>> DeliverySystem<T>::newAlgorithm2(){
 
 	for(unsigned int a = 0; a < paths.size();a++){
 		for(unsigned int b= 0; b < paths[a].size();b++){
-			cout<<paths[a][b]<< " -> ";
+			//cout<<paths[a][b]<< " -> ";
 		}
-		cout<<endl;
+		//cout<<endl;
 	}
 
 	cout<<"2 : " << calculateVehiclesWeight()<<endl;
