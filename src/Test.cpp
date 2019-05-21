@@ -197,6 +197,29 @@ Graph<int> createGraph4() {
 }
 
 
+Graph<int> createGraph5() {
+	Graph<int> myGraph;
+
+	myGraph.addVertex(0,0,0);
+	myGraph.addVertex(1,0,4);
+	myGraph.addVertex(2,1,3);
+	myGraph.addVertex(3,-3,-2);
+	myGraph.addVertex(4,-7,-4);
+
+	myGraph.addEdge(0,1);
+	myGraph.addEdge(0,3);
+	myGraph.addEdge(1,2);
+	myGraph.addEdge(1,3);
+	myGraph.addEdge(3,1);
+	myGraph.addEdge(4,2);
+	myGraph.addEdge(2,4);
+	myGraph.addEdge(3,0);
+
+	return myGraph;
+}
+
+
+
 template<class T>
 GraphViewer * generateGraphViewer(Graph<T> *graph){
 

@@ -98,20 +98,21 @@ void DeliverySystem<T>::setOriginNode(T data){
 
 template<class T>
 void DeliverySystem<T>::setProcessedMap() {
-	double superEdgeWeight;
+	double superEdgeWeight = 0;
 	vector<T> intPoints = getInterestPoints();
 	vector<Vertex<T>*> path; 
 	//first we add all interest points as vertexes to the
 	//processed map
-	for(int i=0;i<intPoints.size(); i++) {
+	for(unsigned int i=0;i<intPoints.size(); i++) {
 		processedMap.addVertex(intPoints.at(i));
 	}
-	for(int i=0; i<intPoints.size(); i++) {
+	for(unsigned int i=0; i<intPoints.size(); i++) {
 		originalMap.dijkstraShortestPath(intPoints.at(i));
-		for(int j=0; j<intPoints.size(); j++) {
+		for(unsigned int j=0; j<intPoints.size(); j++) {
+			superEdgeWeight = 0;
 			if(i==j) continue;
 			path = originalMap.getPathV(intPoints.at(i),intPoints.at(j));
-			for(int k=0, superEdgeWeight=0; k<path.size()-1; k++) {
+			for(unsigned int k=0, superEdgeWeight=0; k<path.size()-1; k++) {
 				superEdgeWeight += path.at(k)->getEdgeWeight(path.at(k+1));//(path.at(k)-,path.at(k+1)->info);
 			}
 			processedMap.addEdge(path.at(i)->getInfo(), path.at(j)->getInfo(), superEdgeWeight);
@@ -329,7 +330,11 @@ vector<T> DeliverySystem<T>::getDeliverPoints() const{
 }
 template<class T>
 vector<T> DeliverySystem<T>::getInterestPoints() const{
-	return getPickupPoints().append(getDeliverPoints());
+	vector<T> v = getPickupPoints();
+	vector<T> v1 = getDeliverPoints();
+	for(unsigned int i = 0; i < v1.size();i++)
+		v.push_back(v1[i]);
+	return v;
 }
 
 #endif

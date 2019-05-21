@@ -416,7 +416,7 @@ void Graph<T>::dijkstraShortestPath(const T &origin) {
 	q.insert(s);
 	while( ! q.empty() ) {
 		auto v = q.extractMin();
-		for(auto e : v->adj) {
+		for(auto e : v->edgeHashTable) {
 			auto oldDist = e.dest->dist;
 			if (relax(v, e.dest, e.weight)) {
 				if (oldDist == INF)
