@@ -115,13 +115,16 @@ void DeliverySystem<T>::setProcessedMap() {
 			for(unsigned int k=0, superEdgeWeight=0; k<path.size()-1; k++) {
 				superEdgeWeight += path.at(k)->getEdgeWeight(path.at(k+1));//(path.at(k)-,path.at(k+1)->info);
 			}
-			processedMap.addEdge(path.at(i)->getInfo(), path.at(j)->getInfo(), superEdgeWeight);
+			processedMap.addEdge(intPoints.at(i), intPoints.at(j), superEdgeWeight);
 		}
 	}
 }
 
 template<class T>
 Graph<T> * DeliverySystem<T>::getMap(){return &originalMap;}
+
+template<class T>
+Graph<T> * DeliverySystem<T>::getProcessedMap(){return &processedMap;}
 
 template<class T>
 void DeliverySystem<T>::initiateRoutes(T data){

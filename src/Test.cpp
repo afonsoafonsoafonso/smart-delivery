@@ -274,11 +274,20 @@ GraphViewer * generateGraphViewer(DeliverySystem<T> ds){
 }
 
 template<class T>
+GraphViewer* generateProcessedGraphViewer(DeliverySystem<T> ds) {
+	GraphViewer* gv = generateGraphViewer(ds.getProcessedMap());
+	setPickups(ds.getPickupPoints(), gv);
+	setDeliveries(ds.getDeliverPoints() , gv);
+	gv->rearrange();
+	return gv;
+}
+
+template<class T>
 void showPath( vector<Vertex<T> *> v , GraphViewer * gv){
 	for(unsigned int i = 0; i < v.size();i++){
 		gv->setVertexColor(v[i]->getInfo(),"RED");
 		gv->rearrange();
-		//Sleep(1000);
+		sleep(1000);
 	}
 }
 
@@ -288,20 +297,16 @@ void showPath( vector<T> v , GraphViewer * gv){
 		cout<<v[i]<<endl;
 		gv->setVertexColor(v[i],"RED");
 		gv->rearrange();
-		//Sleep(1000);
+		sleep(1000);
 	}
 }
 
 int main(int argc, char const *argv[]) {
-
-	cout << "Teste1\n" ;
-
 	Graph<int> graph = createGraph4();
 
 	//Graph<int> graph = readFromFile("Aveiro");
 
 	DeliverySystem<int> ds(graph , 1 , 0);
-		cout << "Teste2\n" ;
 
 	ds.addRequest(Request<int>(1 , 3 , "nenhuma"));
 	ds.addRequest(Request<int>(5 , 2 , "nenhuma"));
@@ -313,22 +318,16 @@ int main(int argc, char const *argv[]) {
 
 	//para compilar e continuar a testar restantes features
 	//basta comentar o uso deste método
+
 	ds.setProcessedMap();
-
-	cout << "Teste3\n" ;
-
-	GraphViewer *gv = generateGraphViewer(ds);
-	cout << "Teste4\n" ;
-
+	//GraphViewer *gv = generateProcessedGraphViewer(ds);
+  GraphViewer *gv = generateGraphViewer(ds);
 	//ds.initiateRoutes();
 	//ds.newAlgorithm();
 
 	ds.newAlgorithm2();
-	cout << "Teste5\n" ;
 
 	showPath(ds.newAlgorithm() , gv);
-	cout << "Teste6\n" ;
-
 
 	gv->rearrange();
 
