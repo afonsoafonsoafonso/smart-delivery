@@ -296,7 +296,7 @@ int main(int argc, char const *argv[]) {
 
 	cout << "Teste1\n" ;
 
-	Graph<int> graph = createGraph4();
+	Graph<int> graph = createGraph5();
 
 	//Graph<int> graph = readFromFile("Aveiro");
 

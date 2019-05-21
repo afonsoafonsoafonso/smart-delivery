@@ -60,6 +60,7 @@ public:
 	vector<T> getDeliverPoints() const;
 	vector<T> getInterestPoints() const;
 
+
 };
 
 
@@ -106,8 +107,10 @@ void DeliverySystem<T>::setProcessedMap() {
 	for(unsigned int i=0;i<intPoints.size(); i++) {
 		processedMap.addVertex(intPoints.at(i));
 	}
+	cout<<"a"<<endl;
 	for(unsigned int i=0; i<intPoints.size(); i++) {
 		originalMap.dijkstraShortestPath(intPoints.at(i));
+		cout<<"c"<<endl;
 		for(unsigned int j=0; j<intPoints.size(); j++) {
 			superEdgeWeight = 0;
 			if(i==j) continue;
@@ -116,12 +119,17 @@ void DeliverySystem<T>::setProcessedMap() {
 				superEdgeWeight += path.at(k)->getEdgeWeight(path.at(k+1));//(path.at(k)-,path.at(k+1)->info);
 			}
 			processedMap.addEdge(path.at(i)->getInfo(), path.at(j)->getInfo(), superEdgeWeight);
+			cout<<"b"<<endl;
 		}
+		cout<<"d"<<endl;
 	}
 }
 
 template<class T>
 Graph<T> * DeliverySystem<T>::getMap(){return &originalMap;}
+
+template<class T>
+Graph<T> * DeliverySystem<T>::getProcessedMap(){return &processedMap;}
 
 template<class T>
 void DeliverySystem<T>::initiateRoutes(T data){
