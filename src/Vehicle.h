@@ -16,10 +16,10 @@ class Vehicle{
 	unsigned int totalDistance = 0;
 	Vertex<T> * currentVertex = NULL;
 	vector<T> path;
-	string especialidade;
+	string specialty;
 
 public:
-
+	Vehicle();
 	Vehicle(string esp);
 	void setCurrentVertex(Vertex<T> * v);
 	void addDistance(unsigned int d);
@@ -30,16 +30,18 @@ public:
 	void setPath(vector<T> v);
 	void addToPath(T data);
 
+	void setSpecialty(string s);
+	string getSpecialty();
+
 	void reset();
-
-
-
-
 };
 
 template<class T>
+Vehicle<T>::Vehicle() {}
+
+template<class T>
 Vehicle<T>::Vehicle(string esp){
-	especialidade = esp;
+	specialty = esp;
 }
 
 template<class T>
@@ -61,10 +63,20 @@ unsigned int Vehicle<T>::getTotalDistance() const{return totalDistance;}
 
 template<class T>
 vector<T> Vehicle<T>::getPath() const{return path;}
+
 template<class T>
 void Vehicle<T>::setPath(vector<T> v){path = v;}
+
 template<class T>
 void Vehicle<T>::addToPath(T data){path.push_back(data);}
+
+template<class T>
+void Vehicle<T>::setSpecialty(string s) {
+	specialty = s;
+}
+
+template<class T>
+string Vehicle<T>::getSpecialty() {return this->specialty;}
 
 template<class T>
 void Vehicle<T>::reset(){

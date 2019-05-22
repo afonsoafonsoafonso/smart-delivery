@@ -62,7 +62,7 @@ public:
 
 	vector<vector<T>> getVehiclesPath() const;
 
-
+	void addVehicle(Vehicle<T> vehicle);
 };
 
 
@@ -380,6 +380,11 @@ vector<vector<T>> DeliverySystem<T>::getVehiclesPath() const{
 		paths.push_back(vehicles[i].getPath());
 	}
 	return paths;
+}
+
+template<class T>
+void DeliverySystem<T>::addVehicle(Vehicle<T> vehicle) {
+	this->vehicles.push_back(vehicle);
 }
 
 
