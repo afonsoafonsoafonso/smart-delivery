@@ -359,9 +359,11 @@ int main(int argc, char const *argv[]) {
 
 	//Graph<int> graph = readFromFile("Aveiro");
 
-	DeliverySystem<int> ds(graph , 3 , 0);
+	DeliverySystem<int> ds(graph , 0);
 
-	ds.addRequest(Request<int>(1 , 3 , "none"));
+	ds.addVehicle("nenhuma");
+
+	ds.addRequest(Request<int>(1 , 3 , "nenhuma"));
 	//ds.addRequest(Request<int>(4 , 2 , "nenhuma"));
 	//ds.addRequest(Request<int>(6 , 3 , "nenhuma"));
 

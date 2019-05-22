@@ -34,8 +34,8 @@ class DeliverySystem{
 
 public:
 
-	DeliverySystem(Graph<T> graph, unsigned int num_vehicles);
-	DeliverySystem(Graph<T> graph, unsigned int num_vehicles, T data);
+	DeliverySystem(Graph<T> graph);
+	DeliverySystem(Graph<T> graph, T data);
 
 	void setOriginNode(T data);
 
@@ -72,8 +72,10 @@ public:
 	vector<string> getEspecialidades() const;
 
 	void run(string str = "");
-
 	void runEspecialidades();
+
+	void addVehicle(Vehicle<T> vehicle);
+	void addVehicle(string esp);
 
 
 };
@@ -92,27 +94,12 @@ vector<string> DeliverySystem<T>::getEspecialidades() const{
 
 
 template<class T>
-DeliverySystem<T>::DeliverySystem(Graph<T> g , unsigned int num_vehicles) {
+DeliverySystem<T>::DeliverySystem(Graph<T> g) {
 	originalMap = g;
-	if(num_vehicles == 0)
-		exit(0);
-	if(num_vehicles > NUM_MAX_VEHICLES)
-		num_vehicles = NUM_MAX_VEHICLES;
-	for(unsigned int i = 0; i < num_vehicles ;i++){
-		vehicles.push_back(Vehicle<T>("nenhuma"));
-	}
-	//cout<<vehicles.size()<<endl;
 }
 template<class T>
-DeliverySystem<T>::DeliverySystem(Graph<T> g , unsigned int num_vehicles, T data){
+DeliverySystem<T>::DeliverySystem(Graph<T> g, T data){
 	originalMap = g;
-	if(num_vehicles == 0)
-		exit(0);
-	if(num_vehicles > NUM_MAX_VEHICLES)
-		num_vehicles = NUM_MAX_VEHICLES;
-	for(unsigned int i = 0; i < num_vehicles ;i++){
-		vehicles.push_back(Vehicle<T>("nenhuma"));
-	}
 	setOriginNode(data);
 }
 
@@ -290,7 +277,7 @@ template<class T>
 vector<Vehicle<T> *> DeliverySystem<T>::getVehicles(string str){
 	vector<Vehicle<T> *> v;
 	for(size_t i = 0; i < vehicles.size() ; i++){
-		if(str == "" || vehicles[i].getEspecialidade() == str)
+		if(str == "" || vehicles[i].getSpecialty() == str)
 			v.push_back(&vehicles[i]);
 	}
 	return v;
@@ -417,6 +404,16 @@ void DeliverySystem<T>::runEspecialidades(){
 		cout<<esp[i]<<endl;
 		run(esp[i]);
 	}
+}
+
+template<class T>
+void DeliverySystem<T>::addVehicle(Vehicle<T> vehicle) {
+	this->vehicles.push_back(vehicle);
+}
+
+template<class T>
+void DeliverySystem<T>::addVehicle(string esp) {
+	this->vehicles.push_back(Vehicle<T>(esp));
 }
 
 
