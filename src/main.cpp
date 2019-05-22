@@ -130,7 +130,7 @@ void user_interface(){
 	  //float latitude, longitude;
 	  vector<Vehicle<int>> vehicles;
 
-	  Graph<int> graph;
+	  Graph<int> graph = createGraph5();
 
 	  DeliverySystem<int> ds(graph, 0);
 
@@ -141,7 +141,6 @@ void user_interface(){
 	    switch (option) {
 	    case 1: {
 	    	GraphViewer *gv = generateOriginalGraphViewer(ds);
-
 	    	ds.runEspecialidades();
 	    	showPath(ds.getVehiclesCompletePath(),gv);
 	    	break;
@@ -192,8 +191,8 @@ void tests(){
 
 int main(int argc, char const *argv[]) {
 
-	//user_interface();
-	tests();
+	user_interface();
+	//tests();
 
 	return 0;
 }
