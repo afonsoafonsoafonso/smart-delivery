@@ -1,10 +1,4 @@
-//#include "src/options/Option.h"
-#include "Request.h"
-#include "Vehicle.h"
-#include "utils.cpp"
-#include <iostream>
-#include <string>
-#include <vector>
+#include "ui.h"
 
 using namespace std;
 
@@ -77,43 +71,4 @@ string get_city() {
   return city;
 }
 
-int main() {
-  string specialty;
-  float latitude, longitude;
-  vector<Vehicle<int>> vehicles;
 
-  Graph<int> graph;
-
-  DeliverySystem<int> ds(graph, 0);
-
-  while (true) {
-    print_main_menu();
-    int option = get_option();
-
-    switch (option) {
-    case 1: {
-      break;
-    }
-    case 2: {
-      Vehicle<int> vehicle;
-      get_vehicle_info(vehicle);
-      ds.addVehicle(vehicle);
-      cout << endl << "»----------------------------------«" << endl << endl;
-      break;
-    }
-    case 3: {
-      Request<int> request = get_request();
-      ds.addRequest(request);
-      cout << endl << "»----------------------------------«" << endl << endl;
-      break;
-    }
-    case 4: {
-      cin.clear();
-      cin.ignore(999999, '\n');
-      string city = get_city();
-      graph = readFromFile(city);
-      break;
-    }
-    }
-  }
-}

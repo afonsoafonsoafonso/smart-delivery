@@ -2,7 +2,7 @@
 #include "ide_listener.h"
 #include "xml_listener.h"
 #include "cute_runner.h"*/
-
+/*
 #include "Graph.h"
 #include <cstdio>
 #include "graphviewer.h"
@@ -15,72 +15,6 @@
 
 #define VERTEXNORMALCOLOR "BLUE"
 #define VERTEXPATHCOLOR "RED"
-
-Graph<int> readFromFile(string city){
-
-	string line;
-	ifstream myFile ("./T08/" + city + "/T08_nodes_X_Y_" + city + ".txt");
-
-	Graph<int> myGraph;
-
-	double px = 0 , py = 0;
-
-	if (myFile.is_open())
-	  {
-		getline (myFile,line);
-		int num_nodes = stoi(line);
-	    for(int i = 0; i < num_nodes ; i++){
-	    	getline (myFile,line);
-	    	line.erase(0, 1);
-	    	int id;
-	    	double x;
-	    	double y;
-	    	size_t pos = 0;
-	    	pos = line.find(",");
-	    	id = stoi(line.substr(0,pos));
-	    	line.erase(0, pos+1);
-	    	pos = line.find(",");
-	    	x = stod(line.substr(0,pos));
-	    	line.erase(0, pos+1);
-	    	pos = line.find(",");
-	    	y = stod(line.substr(0,pos));
-	    	if(px == 0 && py == 0){
-	    		px = x;
-	    		py = y;
-	    	}
-	    	myGraph.addVertex(id,x - px,y - py);
-	    }
-	    myFile.close();
-	 }else{
-		 cout<<"Could not open file " << city <<endl;
-		 exit(1);
-	 }
-	ifstream myFileEdge ("./T08/" + city + "/T08_edges_" + city + ".txt");
-
-	if (myFileEdge.is_open()){
-		getline (myFileEdge,line);
-		int num_edges = stoi(line);
-		for(int i = 0; i < num_edges ; i++){
-			getline (myFileEdge,line);
-		    line.erase(0, 1);
-		    int id1;
-		    int id2;
-		    size_t pos = 0;
-		    pos = line.find(",");
-		    id1 = stoi(line.substr(0,pos));
-		    line.erase(0, pos+1);
-		    pos = line.find(",");
-		    id2 = stod(line.substr(0,pos));
-		    myGraph.addEdge(id1,id2);
-		    }
-		myFileEdge.close();
-	}else{
-		cout<<"Could not open file " << city <<endl;
-		exit(1);
-	}
-
-	return myGraph;
-}
 
 Graph<int> createGraph1() {
 	Graph<int> myGraph;
@@ -347,53 +281,6 @@ void printPaths(vector<vector<T>> paths){
 
 		cout<<endl;
 	}
-}
+}*/
 
 
-int main(int argc, char const *argv[]) {
-
-	cout << "Teste1\n" ;
-
-	Graph<int> graph = createGraph5();
-
-
-	//Graph<int> graph = readFromFile("Aveiro");
-
-	DeliverySystem<int> ds(graph , 0);
-
-	ds.addVehicle("nenhuma");
-
-	ds.addRequest(Request<int>(1 , 3 , "nenhuma"));
-	//ds.addRequest(Request<int>(4 , 2 , "nenhuma"));
-	//ds.addRequest(Request<int>(6 , 3 , "nenhuma"));
-
-	//ds.addRequest(Request<int>(1 , 5 , "nenhuma"));
-	//ds.addRequest(Request<int>(2 , 6 , "nenhuma"));
-	//ds.addRequest(Request<int>(3 , 4, "nenhuma"));
-
-	//para compilar e continuar a testar restantes features
-	//basta comentar o uso deste método
-	cout << "Teste2\n" ;
-	//ds.setProcessedMap();
-	cout << "Teste3\n" ;
-	//GraphViewer *gv = generateProcessedGraphViewer(ds);
-	GraphViewer *gv = generateOriginalGraphViewer(ds);
-	//ds.initiateRoutes();
-	//ds.newAlgorithm();
-	ds.runEspecialidades();
-	showPath(ds.getVehiclesCompletePath(),gv);
-
-	cout << "Teste4\n" ;
-
-	//printPaths(ds.getVehiclesPath());
-
-	cout << "Teste5\n" ;
-
-	//showPath(ds.newAlgorithm() , gv);
-
-	//gv->rearrange();
-
-	getchar();
-
-	return 0;
-}
