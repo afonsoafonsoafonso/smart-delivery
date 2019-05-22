@@ -333,6 +333,7 @@ void showPath( vector<vector<T>> v , GraphViewer * gv){
 		for(unsigned int a = 0; a < path.size();a++){
 			gv->setVertexColor(path[a],VERTEXNORMALCOLOR);
 		}
+		cout<<endl;
 		gv->rearrange();
 	}
 }
@@ -343,6 +344,7 @@ void printPaths(vector<vector<T>> paths){
 		for(unsigned int a = 0; a < paths[i].size();a++){
 			cout<<paths[a][i]<<"->";
 		}
+
 		cout<<endl;
 	}
 }
@@ -359,9 +361,9 @@ int main(int argc, char const *argv[]) {
 
 	DeliverySystem<int> ds(graph , 3 , 0);
 
-	ds.addRequest(Request<int>(1 , 3 , "nenhuma"));
-	ds.addRequest(Request<int>(4 , 2 , "nenhuma"));
-	ds.addRequest(Request<int>(6 , 3 , "nenhuma"));
+	ds.addRequest(Request<int>(1 , 3 , "none"));
+	//ds.addRequest(Request<int>(4 , 2 , "nenhuma"));
+	//ds.addRequest(Request<int>(6 , 3 , "nenhuma"));
 
 	//ds.addRequest(Request<int>(1 , 5 , "nenhuma"));
 	//ds.addRequest(Request<int>(2 , 6 , "nenhuma"));
@@ -370,14 +372,14 @@ int main(int argc, char const *argv[]) {
 	//para compilar e continuar a testar restantes features
 	//basta comentar o uso deste método
 	cout << "Teste2\n" ;
-	ds.setProcessedMap();
+	//ds.setProcessedMap();
 	cout << "Teste3\n" ;
 	//GraphViewer *gv = generateProcessedGraphViewer(ds);
 	GraphViewer *gv = generateOriginalGraphViewer(ds);
 	//ds.initiateRoutes();
 	//ds.newAlgorithm();
-
-	showPath(ds.newAlgorithm2(),gv);
+	ds.runEspecialidades();
+	showPath(ds.getVehiclesCompletePath(),gv);
 
 	cout << "Teste4\n" ;
 
@@ -387,7 +389,7 @@ int main(int argc, char const *argv[]) {
 
 	//showPath(ds.newAlgorithm() , gv);
 
-	gv->rearrange();
+	//gv->rearrange();
 
 	getchar();
 

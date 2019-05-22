@@ -10,6 +10,7 @@
 #define _DELIVERY_SYSTEM_
 
 #include <vector>
+#include <algorithm>
 
 #include "Graph.h"
 #include "Vehicle.h"
@@ -38,16 +39,15 @@ public:
 
 	void setOriginNode(T data);
 
-	void setProcessedMap();
+	void setProcessedMap(string str = "");
 
 	Graph<T> * getMap();
 	Graph<T> * getProcessedMap();
 
 	void initiateRoutes(T data);
 	void initiateRoutes();
-	vector<T> newAlgorithm();
 
-	vector<vector<T>> newAlgorithm2();
+	void newAlgorithm2(string str = "");
 
 	vector<Vertex<T> *> getPath(T destNode);
 
@@ -60,13 +60,35 @@ public:
 	vector<T> getDeliverPoints() const;
 	vector<T> getInterestPoints() const;
 
+	vector<Vehicle<T> *> getVehicles(string str = "");
+
 	vector<vector<T>> getVehiclesPath() const;
+	vector<vector<T>> getVehiclesCompletePath() const;
+
+	vector<T> getPickupPoints(string str) const;
+	vector<T> getDeliverPoints(string str) const;
+	vector<T> getInterestPoints(string str) const;
+
+	vector<string> getEspecialidades() const;
+
+	void run(string str = "");
+
+	void runEspecialidades();
 
 
 };
 
-
-
+template<class T>
+vector<string> DeliverySystem<T>::getEspecialidades() const{
+	vector<string> v;
+	for(size_t i = 0; i < requests.size();i++){
+		string especialidade = requests[i].getEspecialidade();
+		if(std::find(v.begin(), v.end(), especialidade) == v.end()){
+			v.push_back(especialidade);
+		}
+	}
+	return v;
+}
 
 
 template<class T>
@@ -100,13 +122,14 @@ void DeliverySystem<T>::setOriginNode(T data){
 }
 
 template<class T>
-void DeliverySystem<T>::setProcessedMap() {
-	vector<T> intPoints = getInterestPoints();
+void DeliverySystem<T>::setProcessedMap(string str) {
+	Graph<T> tempGraph;
+	vector<T> intPoints = (str == "") ? getInterestPoints() : getInterestPoints(str);
 	intPoints.push_back(origNode);
 	vector<Vertex<T>*> path; 
 
 	for(unsigned int i=0;i<intPoints.size(); i++) {
-		processedMap.addVertex(intPoints.at(i));
+		tempGraph.addVertex(intPoints.at(i));
 	}
 
 	for(unsigned int i=0; i<intPoints.size(); i++) {
@@ -114,9 +137,10 @@ void DeliverySystem<T>::setProcessedMap() {
 		for(unsigned int j=0; j<intPoints.size(); j++) {
 			path = originalMap.getPathV(intPoints.at(i),intPoints.at(j));
 			if(path.size() == 0) continue;
-			processedMap.addProcessedEdge(intPoints.at(i), intPoints.at(j), path);
+			tempGraph.addProcessedEdge(intPoints.at(i), intPoints.at(j), path);
 		}
 	}
+	processedMap = tempGraph;
 }
 
 template<class T>
@@ -200,49 +224,17 @@ double DeliverySystem<T>::getMin(vector<T> &v , size_t pos , T value){
 	return dist;
 }
 
-template<class T>
-vector<T> DeliverySystem<T>::newAlgorithm(){
-	vector<T> v;
-	//int iter = 0;
-	for(unsigned int r = 0; r < requests.size() ; r++){
-
-		double min = INF;
-		vector<T> next;
-		for(unsigned int a = 0; a < v.size() ; a++){
-			vector<T> temp = v;
-			temp.insert(temp.begin() + a , requests[r].getInicio());
-			if(calculatePathWeight(temp) > min)
-				continue;
-			double dist = getMin(temp,a,requests[r].getFim());
-			if(dist < min){
-				min = dist;
-				next = temp;
-			}
-			//iter++;
-		}
-		vector<T> temp = v;
-		temp.push_back(requests[r].getInicio());
-		temp.push_back(requests[r].getFim());
-		double dist = calculatePathWeight(temp);
-		if(dist < min){
-			min = dist;
-			next = temp;
-		}
-		v = next;
-	}
-	cout<<"1 : " << calculatePathWeight(v)<<endl;
-	v.insert(v.begin(),origNode);
-	v.push_back(origNode);
-	//cout<<"\n\nNUM_ITER : " << iter<<"\n\n"<<endl;
-	return v;
-}
 
 template<class T>
-vector<vector<T>> DeliverySystem<T>::newAlgorithm2(){
+void DeliverySystem<T>::newAlgorithm2(string str){
 
 	//Reset vehicles
-	for(unsigned int a = 0; a < vehicles.size();a++)
-		vehicles.at(a).reset();
+	vector<Vehicle<T>*> currentVehicles = getVehicles(str);
+	for(unsigned int a = 0; a < currentVehicles.size();a++)
+		currentVehicles.at(a)->reset();
+
+	if(currentVehicles.size() == 0)
+		return;
 
 	for(unsigned int r = 0; r < requests.size(); r++){
 
@@ -250,9 +242,9 @@ vector<vector<T>> DeliverySystem<T>::newAlgorithm2(){
 		double min_dist = INF;
 		vector<T> min_path;
 
-		for(unsigned int b = 0; b < vehicles.size();b++){
+		for(unsigned int b = 0; b < currentVehicles.size();b++){
 
-			vector<T> path = vehicles.at(b).getPath();
+			vector<T> path = currentVehicles.at(b)->getPath();
 
 			double min = INF;
 			vector<T> next;
@@ -260,7 +252,7 @@ vector<vector<T>> DeliverySystem<T>::newAlgorithm2(){
 			for(unsigned int a = 0; a < path.size() ; a++){
 				vector<T> temp = path;
 				temp.insert(temp.begin() + a , requests[r].getInicio());
-				vehicles.at(b).setPath(temp);
+				currentVehicles.at(b)->setPath(temp);
 				if(calculatePathWeight(temp) > min)
 					continue;
 				double dist = getMin(temp,a,requests[r].getFim());
@@ -277,7 +269,7 @@ vector<vector<T>> DeliverySystem<T>::newAlgorithm2(){
 				min = dist;
 				next = temp;
 			}
-			vehicles.at(b).setPath(next);
+			currentVehicles.at(b)->setPath(next);
 
 			dist = calculateVehiclesWeight();
 
@@ -286,46 +278,23 @@ vector<vector<T>> DeliverySystem<T>::newAlgorithm2(){
 				min_vehicle = b;
 				min_path = next;
 			}
-			vehicles.at(b).setPath(path);
+			currentVehicles.at(b)->setPath(path);
 		}
 
-		vehicles.at(min_vehicle).setPath(min_path);
+		currentVehicles.at(min_vehicle)->setPath(min_path);
 	}
 
-	vector<vector<T>> paths;
-
-	for(unsigned int a = 0; a < vehicles.size();a++){
-		vector<T> p = vehicles[a].getPath();
-		vector<T> path;
-		for(size_t b = 1; b < p.size();b++){
-			//cout<<p[b-1]<<" -> " << p[b] << "  :  ";
-			vector<Vertex<T> *> subs = processedMap.findVertex(p[b-1])->getProcessedEdge(processedMap.findVertex(p[b]));
-			if(path.size()>0)
-				path.pop_back();
-			for(size_t c = 0; c < subs.size();c++){
-				path.push_back(subs[c]->getInfo());
-			}
-			//cout<<p[b]<<endl;
-			//cout<<endl;
-		}
-		path.insert(path.begin(),origNode);
-		path.push_back(origNode);
-		paths.push_back(path);
-	}
-
-	for(unsigned int a = 0; a < paths.size();a++){
-		for(unsigned int b= 0; b < paths[a].size();b++){
-			cout<<paths[a][b]<< " -> ";
-		}
-		cout<<endl;
-	}
-
-	cout<<"2 : " << calculateVehiclesWeight()<<endl;
-
-	return paths;
 }
 
-
+template<class T>
+vector<Vehicle<T> *> DeliverySystem<T>::getVehicles(string str){
+	vector<Vehicle<T> *> v;
+	for(size_t i = 0; i < vehicles.size() ; i++){
+		if(str == "" || vehicles[i].getEspecialidade() == str)
+			v.push_back(&vehicles[i]);
+	}
+	return v;
+}
 
 
 
@@ -374,12 +343,80 @@ vector<T> DeliverySystem<T>::getInterestPoints() const{
 }
 
 template<class T>
+vector<T> DeliverySystem<T>::getPickupPoints(string str) const{
+	vector<T> v;
+	for(unsigned int i = 0; i < requests.size();i++)
+		if(requests[i].getEspecialidade() == str)
+			v.push_back(requests[i].getInicio());
+	return v;
+}
+template<class T>
+vector<T> DeliverySystem<T>::getDeliverPoints(string str) const{
+	vector<T> v;
+	for(unsigned int i = 0; i < requests.size();i++)
+		if(requests[i].getEspecialidade() == str)
+			v.push_back(requests[i].getFim());
+	return v;
+}
+template<class T>
+vector<T> DeliverySystem<T>::getInterestPoints(string str) const{
+	vector<T> v = getPickupPoints(str);
+	vector<T> v1 = getDeliverPoints(str);
+	for(unsigned int i = 0; i < v1.size();i++)
+		v.push_back(v1[i]);
+	return v;
+}
+
+template<class T>
 vector<vector<T>> DeliverySystem<T>::getVehiclesPath() const{
 	vector<vector<T>> paths;
 	for(unsigned int i = 0; i < vehicles.size();i++){
 		paths.push_back(vehicles[i].getPath());
 	}
 	return paths;
+}
+
+template<class T>
+vector<vector<T>> DeliverySystem<T>::getVehiclesCompletePath() const{
+	vector<vector<T>> paths;
+
+		for(unsigned int a = 0; a < vehicles.size();a++){
+			vector<T> p = vehicles[a].getPath();
+			vector<T> path;
+			for(size_t b = 1; b < p.size();b++){
+				//cout<<p[b-1]<<" -> " << p[b] << "  :  ";
+				vector<Vertex<T> *> subs = processedMap.findVertex(p[b-1])->getProcessedEdge(processedMap.findVertex(p[b]));
+				if(path.size()>0)
+					path.pop_back();
+				for(size_t c = 0; c < subs.size();c++){
+					path.push_back(subs[c]->getInfo());
+				}
+				//cout<<p[b]<<endl;
+				//cout<<endl;
+			}
+			path.insert(path.begin(),origNode);
+			path.push_back(origNode);
+			paths.push_back(path);
+		}
+	return paths;
+}
+
+template<class T>
+void DeliverySystem<T>::run(string str){
+
+	setProcessedMap(str);
+
+	newAlgorithm2(str);
+
+}
+
+template<class T>
+void DeliverySystem<T>::runEspecialidades(){
+	vector<string> esp = getEspecialidades();
+	for(size_t i = 0; i < esp.size();i++){
+		cout<<esp[i]<<endl;
+		run(esp[i]);
+	}
 }
 
 

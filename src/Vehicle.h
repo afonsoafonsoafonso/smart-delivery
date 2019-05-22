@@ -29,6 +29,7 @@ public:
 	vector<T> getPath() const;
 	void setPath(vector<T> v);
 	void addToPath(T data);
+	string getEspecialidade() const;
 
 	void reset();
 
@@ -72,5 +73,8 @@ void Vehicle<T>::reset(){
 	setCurrentVertex(NULL);
 	setPath(vector<T>());
 }
+
+template<class T>
+string Vehicle<T>::getEspecialidade() const{return especialidade;}
 
 #endif /* SRC_VEHICLE_H_ */
