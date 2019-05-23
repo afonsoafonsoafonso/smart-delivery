@@ -153,7 +153,12 @@ void loop_main_menu(DeliverySystem<int> &ds, Graph<int> &graph , GraphViewer *gv
     }
     case 3: {
       Request<int> request = get_request();
-      ds.addRequest(request);
+      if(graph.findVertex(request.getInicio()) == nullptr)
+    	  cout<<"Origin node not found."<<endl;
+      else if(graph.findVertex(request.getInicio()) == nullptr)
+    	  cout<<"Destination node not found."<<endl;
+      else
+    	  ds.addRequest(request);
       cout << endl << "»----------------------------------«" << endl << endl;
       break;
     }
