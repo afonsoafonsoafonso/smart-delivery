@@ -26,7 +26,7 @@ class DeliverySystem{
 
 	vector<Vehicle<T>> vehicles;
 	vector<Request<T>> requests;
-	T origNode;
+	T origNode = 0;
 
 	double calculatePathWeight(vector<T> path);
 	double calculateVehiclesWeight();
@@ -40,6 +40,7 @@ public:
 	void setOriginNode(T data);
 
 	void setProcessedMap(string str = "");
+	void setOriginalGraph(Graph<T> g);
 
 	Graph<T> * getMap();
 	Graph<T> * getProcessedMap();
@@ -106,6 +107,11 @@ DeliverySystem<T>::DeliverySystem(Graph<T> g, T data){
 template<class T>
 void DeliverySystem<T>::setOriginNode(T data){
 	origNode = data;
+}
+
+template<class T>
+void DeliverySystem<T>::setOriginalGraph(Graph<T> g){
+	originalMap = g;
 }
 
 template<class T>

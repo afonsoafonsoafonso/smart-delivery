@@ -14,7 +14,7 @@
 
 string get_city();
 Request<int> get_request();
-void get_vehicle_info(Vehicle<int> vehicle);
+void get_vehicle_info(Vehicle<int> &vehicle);
 int get_node_info();
 void print_main_menu();
 int get_option();

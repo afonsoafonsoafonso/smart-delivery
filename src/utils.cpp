@@ -37,7 +37,7 @@ Graph<int> readFromFile(string city) {
     myFile.close();
   } else {
     cout << "Could not open file " << city << endl;
-    exit(1);
+    //exit(1);
   }
   ifstream myFileEdge("./T08/" + city + "/T08_edges_" + city + ".txt");
 
@@ -60,7 +60,7 @@ Graph<int> readFromFile(string city) {
     myFileEdge.close();
   } else {
     cout << "Could not open file " << city << endl;
-    exit(1);
+    //exit(1);
   }
 
   cout << "Map loaded successfully." << endl;

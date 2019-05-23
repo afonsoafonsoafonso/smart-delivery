@@ -38,6 +38,7 @@ void print_main_menu() {
   cout << "2. Add vehicles;" << endl;
   cout << "3. Add request;" << endl;
   cout << "4. Load previous session;" << endl;
+  cout << "5. Set origin vertex;" << endl;
   cout << "Input: ";
 }
 
@@ -51,7 +52,7 @@ int get_node_info() {
   return id;
 }
 
-void get_vehicle_info(Vehicle<int> vehicle) {
+void get_vehicle_info(Vehicle<int> &vehicle) {
   string specialty;
   cout << "What is the type of vehicle? ";
   cin.clear();

@@ -4,14 +4,20 @@
 
 using namespace std;
 
-template <class T> GraphViewer *generateGraphViewer(Graph<T> *graph) {
+template <class T>
+void generateGraphViewer(Graph<T> *graph ,GraphViewer *gv ) {
 
   vector<Vertex<T> *> v = graph->getVertexSet();
 
   if (v.size() == 0)
-    return nullptr;
+    return;
 
-  GraphViewer *gv = new GraphViewer(600, 600, !v[0]->hasPosition(), true);
+  gv->closeWindow();
+#ifdef linux
+    sleep(1000);
+#else
+    Sleep(1000);
+#endif
 
   gv->createWindow(600, 600);
 
@@ -38,7 +44,6 @@ template <class T> GraphViewer *generateGraphViewer(Graph<T> *graph) {
   }
 
   gv->rearrange();
-  return gv;
 }
 
 template <class T> void setPickups(vector<T> v, GraphViewer *gv) {
@@ -51,21 +56,20 @@ template <class T> void setDeliveries(vector<T> v, GraphViewer *gv) {
 }
 
 template <class T>
-GraphViewer *generateOriginalGraphViewer(DeliverySystem<T> ds) {
-  GraphViewer *gv = generateGraphViewer(ds.getMap());
+void generateOriginalGraphViewer(DeliverySystem<T> ds, GraphViewer *gv) {
+  generateGraphViewer(ds.getMap(),gv);
   setPickups(ds.getPickupPoints(), gv);
   setDeliveries(ds.getDeliverPoints(), gv);
   gv->rearrange();
-  return gv;
+
 }
 
 template <class T>
-GraphViewer *generateProcessedGraphViewer(DeliverySystem<T> ds) {
-  GraphViewer *gv = generateGraphViewer(ds.getProcessedMap());
+void generateProcessedGraphViewer(DeliverySystem<T> ds ,  GraphViewer *gv) {
+	generateGraphViewer(ds.getProcessedMap(),gv);
   setPickups(ds.getPickupPoints(), gv);
   setDeliveries(ds.getDeliverPoints(), gv);
   gv->rearrange();
-  return gv;
 }
 
 template <class T> void showPath(vector<Vertex<T> *> v, GraphViewer *gv) {
@@ -115,14 +119,27 @@ template <class T> void printPaths(vector<vector<T>> paths) {
   }
 }
 
-void loop_main_menu(DeliverySystem<int> &ds, Graph<int> &graph) {
+void setOriginVertex(DeliverySystem<int> &ds, Graph<int> &graph){
+	int origin;
+	  cout<<"What is the ID of the origin vertex of the edge? ";
+	  cin>>origin;
+	  while(graph.findVertex(origin) == nullptr){
+		cout<<"Error : node not found."<<endl;
+		cout<<"What is the ID of the origin vertex of the edge? ";
+		cin>>origin;
+	  }
+	  ds.setOriginNode(origin);
+}
+
+void loop_main_menu(DeliverySystem<int> &ds, Graph<int> &graph , GraphViewer *gv) {
   while (true) {
     print_main_menu();
     int option = get_option();
 
     switch (option) {
     case 1: {
-      GraphViewer *gv = generateOriginalGraphViewer(ds);
+      ds.setOriginalGraph(graph);
+      generateOriginalGraphViewer(ds,gv);
       ds.runEspecialidades();
       showPath(ds.getVehiclesCompletePath(), gv);
       break;
@@ -147,6 +164,9 @@ void loop_main_menu(DeliverySystem<int> &ds, Graph<int> &graph) {
       graph = readFromFile(city);
       break;
     }
+    case 5:
+    	setOriginVertex(ds,graph);
+    	break;
     }
   }
 }
@@ -170,23 +190,26 @@ void handle_manual_add_menu(DeliverySystem<int> ds, Graph<int> &graph) {
       cin >> latitude;
       cout << "What is the longitude? " << endl;
       cin >> longitude;
-      graph.addVertex(id, latitude, longitude);
+      if(!graph.addVertex(id, latitude, longitude)){
+    	  cout<< "Vertex already in the graph."<<endl;
+      }
       break;
     }
     case 2: {
       int id_origin, id_dest;
       cout << "What is the ID of the origin vertex of the edge? ";
       cin >> id_origin;
-      if (graph.findVertex(id_origin) == nullptr) {
+      if ((graph.findVertex(id_origin)) == nullptr) {
         cout << "Error in origin node. Exiting..." << endl;
-        exit(1);
+        break;
       }
       cout << "What is the ID of the destination vertex of the edge? ";
       cin >> id_dest;
-      if (graph.findVertex(id_dest) == nullptr) {
+      if ((graph.findVertex(id_dest)) == nullptr) {
         cout << "Error in destination node. Exiting..." << endl;
-        exit(2);
+        break;
       }
+      graph.addEdge(id_origin,id_dest);
       break;
     }
     case 3: {
@@ -197,7 +220,6 @@ void handle_manual_add_menu(DeliverySystem<int> ds, Graph<int> &graph) {
     }
   }
 
-  loop_main_menu(ds, graph);
 }
 
 void user_interface() {
@@ -206,14 +228,15 @@ void user_interface() {
   vector<Vehicle<int>> vehicles;
 
   Graph<int> graph;
-
   DeliverySystem<int> ds(graph, 0);
+  GraphViewer *gv = new GraphViewer(600, 600, false, true);
 
   print_pre_menu();
   int option = get_option();
   switch (option) {
   case 1: {
     handle_manual_add_menu(ds, graph);
+    setOriginVertex(ds,graph);
     break;
   }
   case 2: {
@@ -222,10 +245,10 @@ void user_interface() {
     string city = get_city();
     graph = readFromFile(city);
 
-    loop_main_menu(ds, graph);
     break;
   }
   }
+  loop_main_menu(ds, graph , gv);
 }
 
 void tests() {
@@ -240,7 +263,9 @@ void tests() {
   ds.addRequest(Request<int>(4, 2, "nenhuma"));
   ds.addRequest(Request<int>(6, 3, "nenhuma"));
 
-  GraphViewer *gv = generateOriginalGraphViewer(ds);
+  GraphViewer *gv = new GraphViewer(600, 600, false, true);
+  generateOriginalGraphViewer(ds,gv);
+  generateOriginalGraphViewer(ds,gv);
 
   ds.runEspecialidades();
   showPath(ds.getVehiclesCompletePath(), gv);
@@ -251,7 +276,7 @@ void tests() {
 int main(int argc, char const *argv[]) {
 
   user_interface();
-  // tests();
+  //tests();
 
   return 0;
 }
