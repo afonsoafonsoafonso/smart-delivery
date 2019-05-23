@@ -14,8 +14,6 @@ GraphViewer * generateGraphViewer(Graph<T> *graph){
 	if(v.size()==0)
 		return nullptr;
 
-
-
 	GraphViewer *gv = new GraphViewer(600, 600,!v[0]->hasPosition(), true);
 
 	gv->createWindow(600, 600);
