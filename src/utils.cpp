@@ -213,6 +213,22 @@ Graph<int> createGraph5() {
   return myGraph;
 }
 
+Graph<int> createGraph6() {
+  Graph<int> myGraph;
+
+  myGraph.addVertex(0, 0, 0);
+  myGraph.addVertex(1, 0, 4);
+  myGraph.addVertex(2, 4, 0);
+  myGraph.addVertex(3, 0, -4);
+  myGraph.addVertex(4, -4, 0);
+
+  vector<Vertex<int> *> v = myGraph.getVertexSet();
+	for (unsigned int i = 0; i < v.size(); i++)
+	  for (unsigned int a = 0; a < v.size(); a++)
+		  myGraph.addEdge(i, a);
+	return myGraph;
+}
+
 template <class T> GraphViewer *generateGraphViewer(Graph<T> *graph) {
 
   vector<Vertex<T> *> v = graph->getVertexSet();

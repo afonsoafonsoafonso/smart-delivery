@@ -138,6 +138,14 @@ void loop_main_menu(DeliverySystem<int> &ds, Graph<int> &graph , GraphViewer *gv
 
     switch (option) {
     case 1: {
+    	cout<<"1. Run by vehicles;"<<endl;
+    	cout<<"2. Run by time;"<<endl;
+    	cin>>option;
+    	if(option == 1){
+    		ds.setRunByVehicles();
+    	}else if(option == 2){
+    		ds.setRunByTime();
+    	}
       ds.setOriginalGraph(graph);
       generateOriginalGraphViewer(ds,gv);
       ds.runEspecialidades();
@@ -258,18 +266,18 @@ void user_interface() {
 
 void tests() {
 
-  Graph<int> graph = createGraph5();
+  Graph<int> graph = createGraph6();
 
   DeliverySystem<int> ds(graph, 0);
 
   ds.addVehicle("nenhuma");
+  ds.addVehicle("nenhuma");
 
-  ds.addRequest(Request<int>(1, 3, "nenhuma"));
-  ds.addRequest(Request<int>(4, 2, "nenhuma"));
-  ds.addRequest(Request<int>(6, 3, "nenhuma"));
+  ds.addRequest(Request<int>(1, 2, "nenhuma"));
+  ds.addRequest(Request<int>(3, 4, "nenhuma"));
+  //ds.addRequest(Request<int>(6, 3, "nenhuma"));
 
   GraphViewer *gv = new GraphViewer(600, 600, false, true);
-  generateOriginalGraphViewer(ds,gv);
   generateOriginalGraphViewer(ds,gv);
 
   ds.runEspecialidades();
