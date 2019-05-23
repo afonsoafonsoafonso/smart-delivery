@@ -2,9 +2,6 @@
 
 using namespace std;
 
-#define MIN_OPTION 1
-#define MAX_OPTION 5
-
 bool check_valid_option(int option) {
   return (option >= MIN_OPTION && option <= MAX_OPTION);
 }
@@ -19,6 +16,21 @@ int get_option() {
   return option;
 }
 
+void print_create_map_menu() {
+  cout << "Pick one of the following options: " << endl;
+  cout << "1. Add vertex;" << endl;
+  cout << "2. Add edge;" << endl;
+  cout << "3. Go to vehicle/request addition menu;" << endl;
+}
+
+void print_pre_menu() {
+  cout << "Would you like to create a new map, or load an existing one?"
+       << endl;
+  cout << "1. Create map;" << endl;
+  cout << "2. Load existing map;" << endl;
+  cout << "3. Quit;" << endl;
+}
+
 void print_main_menu() {
   cout << "Please pick one of the following options: " << endl;
 
@@ -26,7 +38,6 @@ void print_main_menu() {
   cout << "2. Add vehicles;" << endl;
   cout << "3. Add request;" << endl;
   cout << "4. Load previous session;" << endl;
-  cout << "5. Save current session;" << endl;
   cout << "Input: ";
 }
 
@@ -70,5 +81,3 @@ string get_city() {
   getline(cin, city);
   return city;
 }
-
-

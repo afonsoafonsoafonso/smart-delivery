@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 
-#include "utils.h"
 #include "Request.h"
 #include "Vehicle.h"
+#include "utils.h"
 
 #define MIN_OPTION 1
 #define MAX_OPTION 5
@@ -19,5 +19,7 @@ int get_node_info();
 void print_main_menu();
 int get_option();
 bool check_valid_option(int option);
+void print_create_map_menu();
+void print_pre_menu();
 
 #endif
