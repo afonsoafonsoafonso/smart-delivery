@@ -15,6 +15,8 @@
 
 Graph<int> readFromFile(string city);
 
+Graph<int> createGraph6();
+
 Graph<int> createGraph5();
 
 Graph<int> createGraph4();

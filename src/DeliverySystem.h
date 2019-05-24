@@ -26,11 +26,15 @@ class DeliverySystem{
 
 	vector<Vehicle<T>> vehicles;
 	vector<Request<T>> requests;
-	T origNode;
+	T origNode = 0;
+
+	double (DeliverySystem<T>::*calculateVehiclesPtr) () = &DeliverySystem<T>::calculateVehiclesWeight_vehicles;
 
 	double calculatePathWeight(vector<T> path);
-	double calculateVehiclesWeight();
+	double calculateVehiclesWeight_vehicles();
+	double calculateVehiclesWeight_time();
 	double getMin(vector<T> &temp , size_t pos , T value);
+
 
 public:
 
@@ -40,6 +44,7 @@ public:
 	void setOriginNode(T data);
 
 	void setProcessedMap(string str = "");
+	void setOriginalGraph(Graph<T> g);
 
 	Graph<T> * getMap();
 	Graph<T> * getProcessedMap();
@@ -77,6 +82,8 @@ public:
 	void addVehicle(Vehicle<T> vehicle);
 	void addVehicle(string esp);
 
+	void setRunByVehicles();
+	void setRunByTime();
 
 };
 
@@ -106,6 +113,11 @@ DeliverySystem<T>::DeliverySystem(Graph<T> g, T data){
 template<class T>
 void DeliverySystem<T>::setOriginNode(T data){
 	origNode = data;
+}
+
+template<class T>
+void DeliverySystem<T>::setOriginalGraph(Graph<T> g){
+	originalMap = g;
 }
 
 template<class T>
@@ -155,13 +167,27 @@ double DeliverySystem<T>::calculatePathWeight(vector<T> path){
 }
 
 template<class T>
-double DeliverySystem<T>::calculateVehiclesWeight(){
+double DeliverySystem<T>::calculateVehiclesWeight_vehicles(){
 	double dist = 0;
 	for(unsigned int i = 0; i < vehicles.size();i++){
 		double temp = calculatePathWeight(vehicles[i].getPath());
 		dist+=temp;
 	}
 	return dist;
+}
+
+template<class T>
+double DeliverySystem<T>::calculateVehiclesWeight_time(){
+	double dist = 0;
+	double max = 0;
+	for(unsigned int i = 0; i < vehicles.size();i++){
+		double temp = calculatePathWeight(vehicles[i].getPath());
+		if(temp > max){
+			max = temp;
+		}
+		dist+=temp;
+	}
+	return dist + max;
 }
 
 template<class T>
@@ -258,7 +284,7 @@ void DeliverySystem<T>::newAlgorithm2(string str){
 			}
 			currentVehicles.at(b)->setPath(next);
 
-			dist = calculateVehiclesWeight();
+			dist = (this->*calculateVehiclesPtr)();
 
 			if(dist < min_dist){
 				min_dist = dist;
@@ -416,5 +442,13 @@ void DeliverySystem<T>::addVehicle(string esp) {
 	this->vehicles.push_back(Vehicle<T>(esp));
 }
 
+template<class T>
+void DeliverySystem<T>::setRunByVehicles(){
+	calculateVehiclesPtr = &DeliverySystem<T>::calculateVehiclesWeight_vehicles;
+}
+template<class T>
+void DeliverySystem<T>::setRunByTime(){
+	calculateVehiclesPtr = &DeliverySystem<T>::calculateVehiclesWeight_time;
+}
 
 #endif
