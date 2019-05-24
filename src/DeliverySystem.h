@@ -28,7 +28,7 @@ class DeliverySystem{
 	vector<Request<T>> requests;
 	T origNode = 0;
 
-	double (DeliverySystem<T>::*calculateVehiclesPtr) () = &calculateVehiclesWeight_vehicles;
+	double (DeliverySystem<T>::*calculateVehiclesPtr) () = &DeliverySystem<T>::calculateVehiclesWeight_vehicles;
 
 	double calculatePathWeight(vector<T> path);
 	double calculateVehiclesWeight_vehicles();
@@ -444,11 +444,11 @@ void DeliverySystem<T>::addVehicle(string esp) {
 
 template<class T>
 void DeliverySystem<T>::setRunByVehicles(){
-	calculateVehiclesPtr = &calculateVehiclesWeight_vehicles;
+	calculateVehiclesPtr = &DeliverySystem<T>::calculateVehiclesWeight_vehicles;
 }
 template<class T>
 void DeliverySystem<T>::setRunByTime(){
-	calculateVehiclesPtr = &calculateVehiclesWeight_time;
+	calculateVehiclesPtr = &DeliverySystem<T>::calculateVehiclesWeight_time;
 }
 
 #endif
