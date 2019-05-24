@@ -85,6 +85,10 @@ public:
 	void setRunByVehicles();
 	void setRunByTime();
 
+	vector<Request<T>> getInvalidRequest(string str = "") ;
+	vector<Request<T>> getValidRequest(string str = "")const ;
+
+
 };
 
 template<class T>
@@ -127,6 +131,11 @@ void DeliverySystem<T>::setProcessedMap(string str) {
 		requests[i].setValid(true);
 	}
 
+	/*vector<Request<T>> v = getValidRequest();
+	for(size_t i = 0; i < v.size();i++)
+		cout<<"Valid request from "<<v[i].getInicio()<<" to "<<v[i].getFim()<<".\n";
+	cout<<endl;*/
+
 	Graph<T> tempGraph;
 	vector<T> intPoints = (str == "") ? getInterestPoints() : getInterestPoints(str);
 
@@ -146,6 +155,11 @@ void DeliverySystem<T>::setProcessedMap(string str) {
 		tempGraph.addProcessedEdge(origNode, intPoints.at(j), path);
 	}
 
+	/*v = getValidRequest();
+	for(size_t i = 0; i < v.size();i++)
+		cout<<"Valid request from "<<v[i].getInicio()<<" to "<<v[i].getFim()<<".\n";*/
+
+	cout<<endl;
 
 	intPoints.push_back(origNode);
 
@@ -160,7 +174,7 @@ void DeliverySystem<T>::setProcessedMap(string str) {
 			if(path.size() == 0){
 				if(intPoints[j] == origNode){
 					for(size_t a = 0; a < requests.size();a++){
-						if(requests[a].getInicio() == intPoints[i] || requests[a].getFim() == intPoints[i]){
+						if(requests[a].getInicio() == intPoints[i-1] || requests[a].getFim() == intPoints[i-1]){
 							requests[a].setValid(false);
 						}
 					}
@@ -170,6 +184,11 @@ void DeliverySystem<T>::setProcessedMap(string str) {
 			tempGraph.addProcessedEdge(intPoints.at(i-1), intPoints.at(j), path);
 		}
 	}
+
+	/*v = getValidRequest();
+	for(size_t i = 0; i < v.size();i++)
+		cout<<"Valid request from "<<v[i].getInicio()<<" to "<<v[i].getFim()<<".\n";*/
+
 	processedMap = tempGraph;
 }
 
@@ -280,7 +299,9 @@ void DeliverySystem<T>::newAlgorithm2(string str){
 	if(currentVehicles.size() == 0)
 		return;
 
-	for(unsigned int r = 0; r < requests.size(); r++){
+	vector<Request<T>> currentRequests = getValidRequest(str);
+
+	for(unsigned int r = 0; r < currentRequests.size(); r++){
 
 		unsigned int min_vehicle = -1;
 		double min_dist = INF;
@@ -295,19 +316,19 @@ void DeliverySystem<T>::newAlgorithm2(string str){
 
 			for(unsigned int a = 0; a < path.size() ; a++){
 				vector<T> temp = path;
-				temp.insert(temp.begin() + a , requests[r].getInicio());
+				temp.insert(temp.begin() + a , currentRequests[r].getInicio());
 				currentVehicles.at(b)->setPath(temp);
 				if(calculatePathWeight(temp) > min)
 					continue;
-				double dist = getMin(temp,a,requests[r].getFim());
+				double dist = getMin(temp,a,currentRequests[r].getFim());
 				if(dist < min){
 					min = dist;
 					next = temp;
 				}
 			}
 			vector<T> temp = path;
-			temp.push_back(requests[r].getInicio());
-			temp.push_back(requests[r].getFim());
+			temp.push_back(currentRequests[r].getInicio());
+			temp.push_back(currentRequests[r].getFim());
 			double dist = calculatePathWeight(temp);
 			if(dist < min){
 				min = dist;
@@ -340,6 +361,14 @@ vector<Vehicle<T> *> DeliverySystem<T>::getVehicles(string str){
 	return v;
 }
 
+template<class T>
+vector<Request<T>> DeliverySystem<T>::getValidRequest(string str)const{
+	vector<Request<T>> v;
+	for(size_t i = 0; i < requests.size();i++)
+		if(requests[i].isValid() && (str == "" || requests[i].getEspecialidade() == str))
+			v.push_back(requests[i]);
+	return v;
+}
 
 
 
@@ -446,19 +475,34 @@ vector<vector<T>> DeliverySystem<T>::getVehiclesCompletePath() const{
 }
 
 template<class T>
+vector<Request<T>> DeliverySystem<T>::getInvalidRequest(string str) {
+	vector<Request<T>> v;
+	for(size_t i = 0; i < requests.size();i++){
+		if(!requests[i].isValid() && (str == "" || str == requests[i].getEspecialidade()) )
+			v.push_back(requests[i]);
+	}
+	return v;
+}
+
+template<class T>
 void DeliverySystem<T>::run(string str){
 
 	setProcessedMap(str);
 
 	newAlgorithm2(str);
 
+	vector<Request<T>> v = getInvalidRequest(str);
+	for(size_t i = 0; i < v.size();i++){
+		cout<<"Request not doable from "<<v[i].getInicio()<<" to "<<v[i].getFim()<<" of type "<<v[i].getEspecialidade()<<".\n";
+	}
+	cout << endl;
 }
 
 template<class T>
 void DeliverySystem<T>::runEspecialidades(){
 	vector<string> esp = getEspecialidades();
 	for(size_t i = 0; i < esp.size();i++){
-		cout<<esp[i]<<endl;
+		//cout<<esp[i]<<endl;
 		run(esp[i]);
 	}
 }

@@ -272,14 +272,18 @@ void tests() {
 
   ds.addVehicle("nenhuma");
   ds.addVehicle("nenhuma");
+  ds.addVehicle("nenhuma");
+
 
   ds.addRequest(Request<int>(1, 2, "nenhuma"));
   ds.addRequest(Request<int>(3, 4, "nenhuma"));
-  //ds.addRequest(Request<int>(6, 3, "nenhuma"));
+  ds.addRequest(Request<int>(5, 3, "nenhuma"));
+  ds.addRequest(Request<int>(2, 5, "nenhuma"));
+  ds.addRequest(Request<int>(4, 1, "nenhuma"));
 
   GraphViewer *gv = new GraphViewer(600, 600, false, true);
   generateOriginalGraphViewer(ds,gv);
-
+  ds.setRunByTime();
   ds.runEspecialidades();
   showPath(ds.getVehiclesCompletePath(), gv);
 
