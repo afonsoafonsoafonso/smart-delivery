@@ -16,12 +16,15 @@ class Request{
 	T inicio;
 	T fim;
 	string especialidade;
+	bool valid = true;
 
 public:
 	Request(T inicio , T fim, string especialidade);
 	T getInicio() const;
 	T getFim() const;
 	string getEspecialidade() const;
+	bool isValid()const;
+	void setValid(bool v);
 
 };
 
@@ -38,7 +41,10 @@ T Request<T>::getFim() const{return fim;}
 template<class T>
 string Request<T>::getEspecialidade() const{return especialidade;}
 
-
+template<class T>
+bool Request<T>::isValid()const{ return valid;}
+template<class T>
+void Request<T>::setValid(bool v){valid = v;}
 
 
 

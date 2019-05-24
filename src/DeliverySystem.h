@@ -122,21 +122,52 @@ void DeliverySystem<T>::setOriginalGraph(Graph<T> g){
 
 template<class T>
 void DeliverySystem<T>::setProcessedMap(string str) {
+
+	for(size_t i = 0; i < requests.size();i++){
+		requests[i].setValid(true);
+	}
+
 	Graph<T> tempGraph;
 	vector<T> intPoints = (str == "") ? getInterestPoints() : getInterestPoints(str);
+
+	vector<Vertex<T>*> path;
+
+	originalMap.dijkstraShortestPath(origNode);
+	for(unsigned int j=0; j<intPoints.size(); j++) {
+		path = originalMap.getPathV(origNode,intPoints.at(j));
+		if(path.size() == 0){
+			for(size_t a = 0; a < requests.size();a++){
+				if(requests[a].getInicio() == intPoints[j] || requests[a].getFim() == intPoints[j]){
+					requests[a].setValid(false);
+				}
+			}
+			continue;
+		}
+		tempGraph.addProcessedEdge(origNode, intPoints.at(j), path);
+	}
+
+
 	intPoints.push_back(origNode);
-	vector<Vertex<T>*> path; 
 
 	for(unsigned int i=0;i<intPoints.size(); i++) {
 		tempGraph.addVertex(intPoints.at(i));
 	}
 
-	for(unsigned int i=0; i<intPoints.size(); i++) {
-		originalMap.dijkstraShortestPath(intPoints.at(i));
+	for(unsigned int i=1; i<=intPoints.size(); i++) {
+		originalMap.dijkstraShortestPath(intPoints.at(i-1));
 		for(unsigned int j=0; j<intPoints.size(); j++) {
-			path = originalMap.getPathV(intPoints.at(i),intPoints.at(j));
-			if(path.size() == 0) continue;
-			tempGraph.addProcessedEdge(intPoints.at(i), intPoints.at(j), path);
+			path = originalMap.getPathV(intPoints.at(i-1),intPoints.at(j));
+			if(path.size() == 0){
+				if(intPoints[j] == origNode){
+					for(size_t a = 0; a < requests.size();a++){
+						if(requests[a].getInicio() == intPoints[i] || requests[a].getFim() == intPoints[i]){
+							requests[a].setValid(false);
+						}
+					}
+				}
+				continue;
+			}
+			tempGraph.addProcessedEdge(intPoints.at(i-1), intPoints.at(j), path);
 		}
 	}
 	processedMap = tempGraph;
@@ -359,7 +390,7 @@ template<class T>
 vector<T> DeliverySystem<T>::getPickupPoints(string str) const{
 	vector<T> v;
 	for(unsigned int i = 0; i < requests.size();i++)
-		if(requests[i].getEspecialidade() == str)
+		if(requests[i].isValid() && requests[i].getEspecialidade() == str)
 			v.push_back(requests[i].getInicio());
 	return v;
 }
@@ -367,7 +398,7 @@ template<class T>
 vector<T> DeliverySystem<T>::getDeliverPoints(string str) const{
 	vector<T> v;
 	for(unsigned int i = 0; i < requests.size();i++)
-		if(requests[i].getEspecialidade() == str)
+		if(requests[i].isValid() && requests[i].getEspecialidade() == str)
 			v.push_back(requests[i].getFim());
 	return v;
 }

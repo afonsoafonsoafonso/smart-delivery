@@ -288,8 +288,8 @@ void tests() {
 
 int main(int argc, char const *argv[]) {
 
-  user_interface();
-  //tests();
+  //user_interface();
+  tests();
 
   return 0;
 }
