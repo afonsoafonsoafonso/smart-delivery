@@ -51,6 +51,7 @@ template <class T> class Vertex {
   void addProcessedEdge(Vertex<T> *dest, vector<Vertex<T> *> path);
   void addEdge(Vertex<T> *dest, double w);
   void addEdge(Vertex<T> *dest);
+  bool removeEdge(const T &dest);
 
   bool position = false;
   double x = 0, y = 0;
@@ -59,8 +60,7 @@ template <class T> class Vertex {
 public:
   Vertex(T in);
   Vertex(T in, int x, int y);
-  bool
-  operator<(Vertex<T> &vertex) const; // // required by MutablePriorityQueue
+  bool operator<(Vertex<T> &vertex) const; // // required by MutablePriorityQueue
   T getInfo() const;
   double getDist() const;
   Vertex *getPath() const;
@@ -122,6 +122,14 @@ template <class T> void Vertex<T>::addEdge(Vertex<T> *d, double w) {
 template <class T> void Vertex<T>::addEdge(Vertex<T> *d) {
   // adj.push_back(Edge<T>(this, d));
   edgeHashTable.insert(Edge<T>(this, d));
+}
+
+template <class T> bool Vertex<T>::removeEdge(const T &dest) {
+	Edge<T> e(this, dest);
+
+	if(edgeHashTable.erase(edgeHashTable.find(e))==0)
+		return false;
+	return true;
 }
 
 template <class T> bool Vertex<T>::operator<(Vertex<T> &vertex) const {
@@ -235,10 +243,14 @@ public:
   Vertex<T> *findVertex(const T &in) const;
   bool addVertex(const T &in);
   bool addVertex(const T &in, double x, double y);
-  bool addProcessedEdge(const T &sourc, const T &dest,
-                        vector<Vertex<T> *> path);
+  bool removeVertex(Vertex<T> &v);
+  bool removeVertex(const T &in);
+  bool addProcessedEdge(const T &sourc, const T &dest, 
+  							vector<Vertex<T> *> path);
   bool addEdge(const T &sourc, const T &dest, double w);
   bool addEdge(const T &sourc, const T &dest);
+  bool removeEdge(const T &sourc, const T &dest);
+  bool removeEdge(Edge<T> &e);
   double getWeight(T orig, T dest);
   int getNumVertex() const;
   vector<Vertex<T> *> getVertexSet() const;
@@ -327,6 +339,20 @@ template <class T> bool Graph<T>::addVertex(const T &in, double x, double y) {
   return true;
 }
 
+template <class T> bool Graph<T>::removeVertex(Vertex<T> &v) {
+	if (findVertex(v->info) == nullptr)
+		return false;
+	vertexHashTable.erase(vertexHashTable.find(v));
+	return true;
+}
+
+template <class T> bool Graph<T>::removeVertex(const T &content) {
+	if (findVertex(content)==nullptr)
+		return false;
+	vertexHashTable.erase(vertexHashTable.find(findVertex(content)));
+	return true;
+}
+
 /*
  * Adds an edge to a graph (this), given the contents of the source and
  * destination vertices and the edge weight (w).
@@ -354,13 +380,34 @@ bool Graph<T>::addEdge(const T &sourc, const T &dest, double w) {
   return true;
 }
 
-template <class T> bool Graph<T>::addEdge(const T &sourc, const T &dest) {
+template <class T> 
+bool Graph<T>::addEdge(const T &sourc, const T &dest) {
   auto v1 = findVertex(sourc);
   auto v2 = findVertex(dest);
   if (v1 == nullptr || v2 == nullptr)
     return false;
   v1->addEdge(v2);
   return true;
+}
+
+template <class T>
+bool Graph<T>::removeEdge(const T &sourc, const T &dest) {
+	auto v1 = findVertex(sourc);
+	auto v2 = findVertex(dest);
+	if(v1 == nullptr || v2 == nullptr)
+		return false;
+	if(v1->removeEdge(v2)==false)
+		return false;
+	return true;
+}
+
+template <class T>
+bool Graph<T>::removeEdge(Edge<T> &e) {
+	Vertex<T> orig = e.orig;
+	Vertex<T> dest = e.dest;
+	if(orig.removeedge(dest)==false)
+		return false;
+	return true;
 }
 
 /**************** Single Source Shortest Path algorithms ************/
