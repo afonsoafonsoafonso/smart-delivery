@@ -384,6 +384,8 @@ Graph<int> test(){
 	myGraph.addVertex(16,1,-5);
 	myGraph.addVertex(17,-7,2);
 	myGraph.addVertex(18,-5,-5);
+	myGraph.addVertex(19,-7,5);
+	myGraph.addVertex(20,10,-3);
 
 	myGraph.addEdge(0,6);
 	myGraph.addEdge(6,7);
@@ -418,7 +420,12 @@ Graph<int> test(){
 	myGraph.addEdge(12,0);
 	myGraph.addEdge(14,18);
 	myGraph.addEdge(11,18);
-
+	myGraph.addEdge(15,12);
+	myGraph.addEdge(18,14);
+	myGraph.addEdge(20,15);
+	myGraph.addEdge(8,19);
+	myGraph.addEdge(15,12);
+	myGraph.addEdge(19,20);
 
 	return myGraph;
 

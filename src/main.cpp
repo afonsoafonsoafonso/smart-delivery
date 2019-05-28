@@ -333,8 +333,6 @@ void tests() {
   addVehicle(ds,"dinheiro");
   addVehicle(ds,"dinheiro");
   addVehicle(ds,"dinheiro");
-  addVehicle(ds,"joias");
-  addVehicle(ds,"jornais");
 
   addRequest(ds,Request<int>(1, 2, "dinheiro"));
   addRequest(ds,Request<int>(3, 4, "dinheiro"));
@@ -352,8 +350,11 @@ void tests() {
   addRequest(ds,Request<int>(18, 12, "dinheiro"));
   //addRequest(ds,Request<int>(4, 13, "nenhuma"));
 
-  addRequest(ds,Request<int>(6, 12, "joias"));
-  addRequest(ds,Request<int>(6, 12, "roupa"));
+  for(int i = 0; i < 100 ; i++){
+	  for(int a = 0; a < 30 ; a++)
+	  addRequest(ds,Request<int>(a%(graph.getVertexSet().size()), i%(graph.getVertexSet().size()), "dinheiro"));
+  }
+
   //addRequest(ds,Request<int>(11, 14, "nenhuma"));
 
 
@@ -374,8 +375,8 @@ void tests() {
 
 int main(int argc, char const *argv[]) {
 
-  user_interface();
-  //tests();
+  //user_interface();
+  tests();
 
   return 0;
 }
