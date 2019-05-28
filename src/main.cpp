@@ -75,9 +75,9 @@ template <class T> void showPath(vector<Vertex<T> *> v, GraphViewer *gv) {
     gv->setVertexColor(v[i]->getInfo(), VERTEXPATHCOLOR);
     gv->rearrange();
 #ifdef linux
-    sleep(1000);
+    sleep(800);
 #else
-    //Sleep(1000);
+    Sleep(800);
 #endif
   }
 }
@@ -87,12 +87,13 @@ template <class T> void showPath(vector<T> v, GraphViewer *gv) {
 	  cout << v[i];
 	  if(i != v.size()-1)
 	      	cout << " -> ";
+	  fflush(stdout);
     gv->setVertexColor(v[i], VERTEXPATHCOLOR);
     gv->rearrange();
 #ifdef linux
-    sleep(1000);
+    sleep(800);
 #else
-    //Sleep(1000);
+    Sleep(800);
 #endif
   }
 }
@@ -300,28 +301,38 @@ void tests() {
   addVehicle(ds,"nenhuma");
   addVehicle(ds,"nenhuma");
   addVehicle(ds,"nenhuma");
+  addVehicle(ds,"joias");
 
   addRequest(ds,Request<int>(1, 2, "nenhuma"));
   addRequest(ds,Request<int>(3, 4, "nenhuma"));
   addRequest(ds,Request<int>(5, 3, "nenhuma"));
   addRequest(ds,Request<int>(2, 5, "nenhuma"));
-  addRequest(ds,Request<int>(4, 1, "nenhuma"));
-  addRequest(ds,Request<int>(7, 14, "nenhuma"));
-  addRequest(ds,Request<int>(6, 10, "nenhuma"));
-  addRequest(ds,Request<int>(11, 3, "nenhuma"));
-  addRequest(ds,Request<int>(2, 3, "nenhuma"));
-  addRequest(ds,Request<int>(0, 12, "nenhuma"));
+  //addRequest(ds,Request<int>(4, 1, "nenhuma"));
+  //addRequest(ds,Request<int>(7, 14, "nenhuma"));
+  //addRequest(ds,Request<int>(6, 10, "nenhuma"));
+  //addRequest(ds,Request<int>(11, 3, "nenhuma"));
+  //addRequest(ds,Request<int>(2, 3, "nenhuma"));
+  addRequest(ds,Request<int>(0, 10, "nenhuma"));
+  addRequest(ds,Request<int>(11, 14, "nenhuma"));
+  //addRequest(ds,Request<int>(0, 8, "nenhuma"));
+  addRequest(ds,Request<int>(16, 18, "nenhuma"));
+  addRequest(ds,Request<int>(18, 12, "nenhuma"));
+  //addRequest(ds,Request<int>(4, 13, "nenhuma"));
+
+  addRequest(ds,Request<int>(6, 12, "joias"));
+  //addRequest(ds,Request<int>(11, 14, "nenhuma"));
 
 
   GraphViewer *gv = new GraphViewer(600, 600, false, true);
   generateOriginalGraphViewer(ds, gv);
+
   ds.setRunByTime();
 
   ds.runEspecialidades();
 
   //generateProcessedGraphViewer(ds, gv);
   //cout<<ds.getVehiclesCompletePath().size()<<endl;
-  showPath(ds.getVehiclesCompletePath());
+  showPath(ds.getVehiclesCompletePath(),gv);
   //showPath(ds.getVehiclesPath());
 
   getchar();

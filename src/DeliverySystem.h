@@ -28,11 +28,11 @@ class DeliverySystem{
 	vector<Request<T>> requests;
 	T origNode = 0;
 
-	double (DeliverySystem<T>::*calculateVehiclesPtr) () = &DeliverySystem<T>::calculateVehiclesWeight_vehicles;
+	double (DeliverySystem<T>::*calculateVehiclesPtr) (string str) = &DeliverySystem<T>::calculateVehiclesWeight_vehicles;
 
 	double calculatePathWeight(vector<T> path);
-	double calculateVehiclesWeight_vehicles();
-	double calculateVehiclesWeight_time();
+	double calculateVehiclesWeight_vehicles(string str = "");
+	double calculateVehiclesWeight_time(string str = "");
 	double getMin(vector<T> &temp , size_t pos , T value, size_t r);
 
 
@@ -68,7 +68,7 @@ public:
 	vector<Vehicle<T> *> getVehicles(string str = "");
 
 	vector<vector<T>> getVehiclesPath() const;
-	vector<vector<T>> getVehiclesCompletePath() const;
+	vector<vector<T>> getVehiclesCompletePath();
 
 	vector<T> getPickupPoints(string str) const;
 	vector<T> getDeliverPoints(string str) const;
@@ -217,21 +217,23 @@ double DeliverySystem<T>::calculatePathWeight(vector<T> path){
 }
 
 template<class T>
-double DeliverySystem<T>::calculateVehiclesWeight_vehicles(){
+double DeliverySystem<T>::calculateVehiclesWeight_vehicles(string str){
 	double dist = 0;
-	for(unsigned int i = 0; i < vehicles.size();i++){
-		double temp = calculatePathWeight(vehicles[i].getPath());
+	vector<Vehicle<T>* >currentVehicles = getVehicles(str);
+	for(unsigned int i = 0; i < currentVehicles.size();i++){
+		double temp = calculatePathWeight(currentVehicles[i]->getPath());
 		dist+=temp;
 	}
 	return dist;
 }
 
 template<class T>
-double DeliverySystem<T>::calculateVehiclesWeight_time(){
+double DeliverySystem<T>::calculateVehiclesWeight_time(string str){
 	double dist = 0;
 	double max = 0;
-	for(unsigned int i = 0; i < vehicles.size();i++){
-		double temp = calculatePathWeight(vehicles[i].getPath());
+	vector<Vehicle<T>* >currentVehicles = getVehicles(str);
+	for(unsigned int i = 0; i < currentVehicles.size();i++){
+		double temp = calculatePathWeight(currentVehicles[i]->getPath());
 		if(temp > max){
 			max = temp;
 		}
@@ -339,17 +341,17 @@ void DeliverySystem<T>::newAlgorithm2(string str){
 			vector<T> temp = path;
 			temp.push_back(currentRequests[r].getInicio());
 			temp.push_back(currentRequests[r].getFim());
-			double dist = calculatePathWeight(temp);
-			if(dist < min){
-				min = dist;
+			double dist_p = calculatePathWeight(temp);
+			if(dist_p < min){
+				min = dist_p;
 				next = temp;
 			}
 			currentVehicles.at(b)->setPath(next);
 
-			dist = (this->*calculateVehiclesPtr)();
+			double v_dist = (this->*calculateVehiclesPtr)(str);
 
-			if(dist < min_dist){
-				min_dist = dist;
+			if(v_dist < min_dist){
+				min_dist = v_dist;
 				min_vehicle = b;
 				min_path = next;
 			}
@@ -464,10 +466,12 @@ vector<vector<T>> DeliverySystem<T>::getVehiclesPath() const{
 }
 
 template<class T>
-vector<vector<T>> DeliverySystem<T>::getVehiclesCompletePath() const{
+vector<vector<T>> DeliverySystem<T>::getVehiclesCompletePath(){
 	vector<vector<T>> paths;
 
 		for(unsigned int a = 0; a < vehicles.size();a++){
+			string str = vehicles[a].getSpecialty();
+			setProcessedMap(str);
 			vector<T> p = vehicles[a].getPath();
 			vector<T> path;
 			if(p.size()>0){
