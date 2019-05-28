@@ -360,3 +360,68 @@ template <class T> void printPaths(vector<vector<T>> paths) {
     cout << endl;
   }
 }
+
+
+Graph<int> test(){
+	Graph<int> myGraph;
+
+	myGraph.addVertex(0,0,0);
+	myGraph.addVertex(1,5,0);
+	myGraph.addVertex(2,7,2);
+	myGraph.addVertex(3,6,1);
+	myGraph.addVertex(4,2,6);
+	myGraph.addVertex(5,3,7);
+	myGraph.addVertex(6,2,1);
+	myGraph.addVertex(7,4,4);
+	myGraph.addVertex(8,0,-3);
+	myGraph.addVertex(9,-1,-4);
+	myGraph.addVertex(10,-5,3);
+	myGraph.addVertex(11,-7,-7);
+	myGraph.addVertex(12,-3,-2);
+	myGraph.addVertex(13,-9,3);
+	myGraph.addVertex(14,-5,-3);
+	myGraph.addVertex(15,1,-5);
+	myGraph.addVertex(16,1,-5);
+	myGraph.addVertex(17,-7,2);
+	myGraph.addVertex(18,-5,-5);
+
+	myGraph.addEdge(0,6);
+	myGraph.addEdge(6,7);
+	myGraph.addEdge(6,1);
+	myGraph.addEdge(7,2);
+	myGraph.addEdge(7,4);
+	myGraph.addEdge(4,5);
+	myGraph.addEdge(5,7);
+	myGraph.addEdge(2,3);
+	myGraph.addEdge(3,1);
+	myGraph.addEdge(1,2);
+	myGraph.addEdge(1,8);
+	myGraph.addEdge(8,6);
+	myGraph.addEdge(8,9);
+	myGraph.addEdge(9,0);
+	myGraph.addEdge(0,10);
+	myGraph.addEdge(10,5);
+	myGraph.addEdge(10,17);
+	myGraph.addEdge(17,10);
+	myGraph.addEdge(17,14);
+	myGraph.addEdge(14,12);
+	myGraph.addEdge(14,9);
+	myGraph.addEdge(9,16);
+	myGraph.addEdge(14,11);
+	myGraph.addEdge(16,11);
+	myGraph.addEdge(11,13);
+	myGraph.addEdge(13,10);
+	myGraph.addEdge(8,16);
+	myGraph.addEdge(16,8);
+	myGraph.addEdge(0,12);
+	myGraph.addEdge(9,12);
+	myGraph.addEdge(12,0);
+	myGraph.addEdge(14,18);
+	myGraph.addEdge(11,18);
+
+
+	return myGraph;
+
+}
+
+

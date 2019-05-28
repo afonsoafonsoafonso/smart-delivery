@@ -27,6 +27,8 @@ Graph<int> createGraph2();
 
 Graph<int> createGraph1();
 
+Graph<int> test();
+
 
 
 #endif

@@ -13,9 +13,9 @@ template <class T> void generateGraphViewer(Graph<T> *graph, GraphViewer *gv) {
 
   gv->closeWindow();
 #ifdef linux
-  sleep(1000);
+  sleep(500);
 #else
-  Sleep(1000);
+  Sleep(500);
 #endif
 
   gv->createWindow(600, 600);
@@ -77,21 +77,31 @@ template <class T> void showPath(vector<Vertex<T> *> v, GraphViewer *gv) {
 #ifdef linux
     sleep(1000);
 #else
-    Sleep(1000);
+    //Sleep(1000);
 #endif
   }
 }
 
 template <class T> void showPath(vector<T> v, GraphViewer *gv) {
   for (unsigned int i = 0; i < v.size(); i++) {
-    cout << v[i] << endl;
+	  cout << v[i];
+	  if(i != v.size()-1)
+	      	cout << " -> ";
     gv->setVertexColor(v[i], VERTEXPATHCOLOR);
     gv->rearrange();
 #ifdef linux
     sleep(1000);
 #else
-    Sleep(1000);
+    //Sleep(1000);
 #endif
+  }
+}
+
+template <class T> void showPath(vector<T> v) {
+  for (unsigned int i = 0; i < v.size(); i++) {
+    cout << v[i];
+    if(i != v.size()-1)
+    	cout << " -> ";
   }
 }
 
@@ -104,6 +114,14 @@ template <class T> void showPath(vector<vector<T>> v, GraphViewer *gv) {
     }
     cout << endl;
     gv->rearrange();
+  }
+}
+
+template <class T> void showPath(vector<vector<T>> v) {
+  for (size_t i = 0; i < v.size(); i++) {
+    vector<T> path = v[i];
+    showPath(path);
+    cout << endl;
   }
 }
 
@@ -262,35 +280,48 @@ void user_interface() {
   loop_main_menu(ds, graph, gv);
 }
 
+template<class T>
+void addRequest(DeliverySystem<T>&ds, Request<T> r){
+	ds.addRequest(r);
+	cout<< "Added request of type '"<<r.getEspecialidade()<<"' from "<<r.getInicio()<<" to "<<r.getFim()<<".\n";
+}
+template<class T>
+void addVehicle(DeliverySystem<T>&ds, string str){
+	ds.addVehicle(str);
+	cout<< "Added vehicle of type '"<<str<<".\n";
+}
+
 void tests() {
 
-  Graph<int> graph = createGraph6();
+  Graph<int> graph = test();
 
   DeliverySystem<int> ds(graph, 0);
 
-  ds.addVehicle("nenhuma");
-  ds.addVehicle("nenhuma");
-  ds.addVehicle("nenhuma");
+  addVehicle(ds,"nenhuma");
+  addVehicle(ds,"nenhuma");
+  //addVehicle(ds,"nenhuma");
 
-  ds.addRequest(Request<int>(1, 2, "nenhuma"));
-  ds.addRequest(Request<int>(3, 4, "nenhuma"));
-  ds.addRequest(Request<int>(5, 3, "nenhuma"));
-  ds.addRequest(Request<int>(2, 5, "nenhuma"));
-  ds.addRequest(Request<int>(4, 1, "nenhuma"));
+  addRequest(ds,Request<int>(1, 2, "nenhuma"));
+  addRequest(ds,Request<int>(3, 4, "nenhuma"));
+  addRequest(ds,Request<int>(5, 3, "nenhuma"));
+  addRequest(ds,Request<int>(2, 5, "nenhuma"));
+  addRequest(ds,Request<int>(4, 1, "nenhuma"));
 
   GraphViewer *gv = new GraphViewer(600, 600, false, true);
   generateOriginalGraphViewer(ds, gv);
-  ds.setRunByTime();
+  //ds.setRunByTime();
   ds.runEspecialidades();
-  showPath(ds.getVehiclesCompletePath(), gv);
+  //cout<<ds.getVehiclesCompletePath().size()<<endl;
+  showPath(ds.getVehiclesCompletePath());
+  showPath(ds.getVehiclesPath());
 
   getchar();
 }
 
 int main(int argc, char const *argv[]) {
 
-  user_interface();
-  // tests();
+  //user_interface();
+	tests();
 
   return 0;
 }
