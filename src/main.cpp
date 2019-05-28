@@ -3,6 +3,7 @@
 #include "ui.h"
 
 using namespace std;
+void tests();
 
 template <class T> void generateGraphViewer(Graph<T> *graph, GraphViewer *gv , bool d = false) {
 
@@ -109,6 +110,18 @@ template <class T> void showPath(vector<T> v) {
 template <class T> void showPath(vector<vector<T>> v, GraphViewer *gv) {
   for (size_t i = 0; i < v.size(); i++) {
     vector<T> path = v[i];
+    showPath(path, gv);
+    for (unsigned int a = 0; a < path.size(); a++) {
+      gv->setVertexColor(path[a], VERTEXNORMALCOLOR);
+    }
+    cout << endl;
+    gv->rearrange();
+  }
+}
+template <class T> void showPaths(vector<Path<T>> v, GraphViewer *gv) {
+  for (size_t i = 0; i < v.size(); i++) {
+    vector<T> path = v[i].path;
+    cout << v[i].specialty<<" : ";
     showPath(path, gv);
     for (unsigned int a = 0; a < path.size(); a++) {
       gv->setVertexColor(path[a], VERTEXNORMALCOLOR);
@@ -253,6 +266,16 @@ void handle_manual_add_menu(DeliverySystem<int> ds, Graph<int> &graph) {
 }
 
 void user_interface() {
+	int opt = 0;
+	do{
+	cout<<"1.Run user decisions;\n2.Run tests;";
+	cin >> opt;
+	}while(opt != 1 && opt != 2);
+	if(opt == 2){
+		tests();
+		return;
+	}
+
   string specialty;
   // float latitude, longitude;
   vector<Vehicle<int>> vehicles;
@@ -298,28 +321,30 @@ void tests() {
 
   DeliverySystem<int> ds(graph, 0);
 
-  addVehicle(ds,"nenhuma");
-  addVehicle(ds,"nenhuma");
-  addVehicle(ds,"nenhuma");
+  addVehicle(ds,"dinheiro");
+  addVehicle(ds,"dinheiro");
+  addVehicle(ds,"dinheiro");
   addVehicle(ds,"joias");
+  addVehicle(ds,"jornais");
 
-  addRequest(ds,Request<int>(1, 2, "nenhuma"));
-  addRequest(ds,Request<int>(3, 4, "nenhuma"));
-  addRequest(ds,Request<int>(5, 3, "nenhuma"));
-  addRequest(ds,Request<int>(2, 5, "nenhuma"));
+  addRequest(ds,Request<int>(1, 2, "dinheiro"));
+  addRequest(ds,Request<int>(3, 4, "dinheiro"));
+  addRequest(ds,Request<int>(5, 3, "dinheiro"));
+  addRequest(ds,Request<int>(2, 5, "dinheiro"));
   //addRequest(ds,Request<int>(4, 1, "nenhuma"));
   //addRequest(ds,Request<int>(7, 14, "nenhuma"));
   //addRequest(ds,Request<int>(6, 10, "nenhuma"));
   //addRequest(ds,Request<int>(11, 3, "nenhuma"));
   //addRequest(ds,Request<int>(2, 3, "nenhuma"));
-  addRequest(ds,Request<int>(0, 10, "nenhuma"));
-  addRequest(ds,Request<int>(11, 14, "nenhuma"));
+  addRequest(ds,Request<int>(0, 10, "dinheiro"));
+  addRequest(ds,Request<int>(11, 14, "dinheiro"));
   //addRequest(ds,Request<int>(0, 8, "nenhuma"));
-  addRequest(ds,Request<int>(16, 18, "nenhuma"));
-  addRequest(ds,Request<int>(18, 12, "nenhuma"));
+  addRequest(ds,Request<int>(16, 18, "dinheiro"));
+  addRequest(ds,Request<int>(18, 12, "dinheiro"));
   //addRequest(ds,Request<int>(4, 13, "nenhuma"));
 
   addRequest(ds,Request<int>(6, 12, "joias"));
+  addRequest(ds,Request<int>(6, 12, "roupa"));
   //addRequest(ds,Request<int>(11, 14, "nenhuma"));
 
 
@@ -332,7 +357,7 @@ void tests() {
 
   //generateProcessedGraphViewer(ds, gv);
   //cout<<ds.getVehiclesCompletePath().size()<<endl;
-  showPath(ds.getVehiclesCompletePath(),gv);
+  showPaths(ds.getVehiclesCompletePaths(),gv);
   //showPath(ds.getVehiclesPath());
 
   getchar();
@@ -340,8 +365,8 @@ void tests() {
 
 int main(int argc, char const *argv[]) {
 
-  //user_interface();
-	tests();
+  user_interface();
+  //tests();
 
   return 0;
 }

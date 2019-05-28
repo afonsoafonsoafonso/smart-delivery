@@ -85,5 +85,17 @@ void Vehicle<T>::reset(){
 	setPath(vector<T>());
 }
 
+template<class T>
+class Path{
+public:
+	vector<T> path;
+	string specialty;
+	Path(vector<T> path,string specialty);
+};
+
+template<class T>
+Path<T>::Path(vector<T> path,string specialty): path(path) , specialty(specialty){
+
+}
 
 #endif /* SRC_VEHICLE_H_ */

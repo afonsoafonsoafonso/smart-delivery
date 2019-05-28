@@ -69,6 +69,7 @@ public:
 
 	vector<vector<T>> getVehiclesPath() const;
 	vector<vector<T>> getVehiclesCompletePath();
+	vector<Path<T>> getVehiclesCompletePaths();
 
 	vector<T> getPickupPoints(string str) const;
 	vector<T> getDeliverPoints(string str) const;
@@ -507,6 +508,51 @@ vector<vector<T>> DeliverySystem<T>::getVehiclesCompletePath(){
 				}
 			}
 			paths.push_back(path);
+		}
+	return paths;
+}
+template<class T>
+vector<Path<T>> DeliverySystem<T>::getVehiclesCompletePaths(){
+	vector<Path<T>> paths;
+
+		for(unsigned int a = 0; a < vehicles.size();a++){
+			string str = vehicles[a].getSpecialty();
+			setProcessedMap(str);
+			vector<T> p = vehicles[a].getPath();
+			vector<T> path;
+			if(p.size()>0){
+				vector<Vertex<T> *> subs = processedMap.findVertex(origNode)->getProcessedEdge(processedMap.findVertex(p[0]));
+				if(path.size()>0)
+					path.pop_back();
+				for(size_t c = 0; c < subs.size();c++){
+					path.push_back(subs[c]->getInfo());
+				}
+			}else{
+				path.push_back(origNode);
+				path.push_back(origNode);
+				paths.push_back(Path<T>(path,vehicles[a].getSpecialty()));
+				continue;
+			}
+			for(size_t b = 1; b < p.size();b++){
+				//cout<<p[b-1]<<" -> " << p[b] << "  :  ";
+				vector<Vertex<T> *> subs = processedMap.findVertex(p[b-1])->getProcessedEdge(processedMap.findVertex(p[b]));
+				if(path.size()>0)
+					path.pop_back();
+				for(size_t c = 0; c < subs.size();c++){
+					path.push_back(subs[c]->getInfo());
+				}
+				//cout<<p[b]<<endl;
+				//cout<<endl;
+			}
+			if(p.size()>0){
+				vector<Vertex<T> *> subs = processedMap.findVertex(p[p.size()-1])->getProcessedEdge(processedMap.findVertex(origNode));
+				if(path.size()>0)
+					path.pop_back();
+				for(size_t c = 0; c < subs.size();c++){
+					path.push_back(subs[c]->getInfo());
+				}
+			}
+			paths.push_back(Path<T>(path,vehicles[a].getSpecialty()));
 		}
 	return paths;
 }
