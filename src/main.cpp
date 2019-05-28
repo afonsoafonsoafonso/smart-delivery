@@ -4,7 +4,7 @@
 
 using namespace std;
 
-template <class T> void generateGraphViewer(Graph<T> *graph, GraphViewer *gv) {
+template <class T> void generateGraphViewer(Graph<T> *graph, GraphViewer *gv , bool d = false) {
 
   vector<Vertex<T> *> v = graph->getVertexSet();
 
@@ -25,7 +25,7 @@ template <class T> void generateGraphViewer(Graph<T> *graph, GraphViewer *gv) {
 
   for (unsigned int i = 0; i < v.size(); i++) {
 
-    if (v[i]->hasPosition()) {
+    if (d) {
       gv->addNode(v[i]->getInfo(), v[i]->getX(), v[i]->getY());
     } else
       gv->addNode(v[i]->getInfo());
@@ -56,7 +56,7 @@ template <class T> void setDeliveries(vector<T> v, GraphViewer *gv) {
 
 template <class T>
 void generateOriginalGraphViewer(DeliverySystem<T> ds, GraphViewer *gv) {
-  generateGraphViewer(ds.getMap(), gv);
+  generateGraphViewer(ds.getMap(), gv,true);
   setPickups(ds.getPickupPoints(), gv);
   setDeliveries(ds.getDeliverPoints(), gv);
   gv->rearrange();
@@ -309,11 +309,14 @@ void tests() {
 
   GraphViewer *gv = new GraphViewer(600, 600, false, true);
   generateOriginalGraphViewer(ds, gv);
-  //ds.setRunByTime();
+  ds.setRunByTime();
+
   ds.runEspecialidades();
+
+  //generateProcessedGraphViewer(ds, gv);
   //cout<<ds.getVehiclesCompletePath().size()<<endl;
   showPath(ds.getVehiclesCompletePath());
-  showPath(ds.getVehiclesPath());
+  //showPath(ds.getVehiclesPath());
 
   getchar();
 }

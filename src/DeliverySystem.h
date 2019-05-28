@@ -33,7 +33,7 @@ class DeliverySystem{
 	double calculatePathWeight(vector<T> path);
 	double calculateVehiclesWeight_vehicles();
 	double calculateVehiclesWeight_time();
-	double getMin(vector<T> &temp , size_t pos , T value);
+	double getMin(vector<T> &temp , size_t pos , T value, size_t r);
 
 
 public:
@@ -241,7 +241,11 @@ double DeliverySystem<T>::calculateVehiclesWeight_time(){
 }
 
 template<class T>
-double DeliverySystem<T>::getMin(vector<T> &v , size_t pos , T value){
+double DeliverySystem<T>::getMin(vector<T> &v , size_t pos , T value, size_t r){
+	//int ttt = pos;
+	/*for(size_t i = 0; i < v.size();i++)
+		cout<<v[i]<<"  ";
+	cout<<"\n value = "<<value<<endl;*/
 	//int iter = 0;
 	double min = INF;
 	double dist = 0;
@@ -250,10 +254,10 @@ double DeliverySystem<T>::getMin(vector<T> &v , size_t pos , T value){
 	for(size_t i = pos+1; i < v.size();i++){
 		if(v[i] == value){
 			v.erase(v.begin() + i);
-			for(size_t a = 0 ; a < requests.size();a++){
-				if(requests[a].getFim() == value){
+			for(size_t a = 0 ; a < requests.size() && a < r;a++){
+				if(requests[a].getFim() == value ){
 					for(size_t b = i; b < v.size();b++){
-						if(v[b] == requests[a].getInicio()){
+						if(v[b] == requests[a].getInicio() ){
 							pos = b;
 						}
 					}
@@ -284,12 +288,14 @@ double DeliverySystem<T>::getMin(vector<T> &v , size_t pos , T value){
 	}
 	cout<<endl;*/
 	//cout<<"\n\nNUM_ITER : " << iter<<"\n\n"<<endl;
-	return dist;
+	return min;
 }
 
 
 template<class T>
 void DeliverySystem<T>::newAlgorithm2(string str){
+
+	//cout << processedMap.getWeight(2 , 2) <<endl;
 
 	//Reset vehicles
 	vector<Vehicle<T>*> currentVehicles = getVehicles(str);
@@ -314,15 +320,19 @@ void DeliverySystem<T>::newAlgorithm2(string str){
 			double min = INF;
 			vector<T> next;
 
+			//inserir inicio
 			for(unsigned int a = 0; a < path.size() ; a++){
+				double dista = INF;
 				vector<T> temp = path;
 				temp.insert(temp.begin() + a , currentRequests[r].getInicio());
+
 				currentVehicles.at(b)->setPath(temp);
 				if(calculatePathWeight(temp) > min)
 					continue;
-				double dist = getMin(temp,a,currentRequests[r].getFim());
-				if(dist < min){
-					min = dist;
+				T value = currentRequests[r].getFim();
+				dista = getMin(temp,a,value,r);
+				if(dista < min){
+					min = dista;
 					next = temp;
 				}
 			}
@@ -345,7 +355,11 @@ void DeliverySystem<T>::newAlgorithm2(string str){
 			}
 			currentVehicles.at(b)->setPath(path);
 		}
-
+		/*cout <<"BEST : ";
+		for(size_t i = 0; i < min_path.size();i++)
+			cout<<min_path[i]<<"  ";
+		cout<<"   "<<min_dist<<endl;
+		cout<<endl;*/
 		currentVehicles.at(min_vehicle)->setPath(min_path);
 	}
 
