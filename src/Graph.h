@@ -343,6 +343,20 @@ template <class T> bool Graph<T>::removeVertex(Vertex<T> &v) {
 	if (findVertex(v->info) == nullptr)
 		return false;
 	vertexHashTable.erase(vertexHashTable.find(v));
+  for (auto it=vertexHashTable.begin(); it!=vertexHashTable.end(); ++it) {
+    vector<Edge<T>> v = it->getEdges();
+    for(int i=0; i<v.size(); i++) {
+      if(v.at(i).dest==v) {
+        it->removeEdge(v);
+      }
+    }
+  }
+  /* Alternativa que até me parece melhor. Basta apenas isto, não há comparações
+  // não há nada. Caso exista elimina, caso contrario ignora-se
+  for (auto it=vertexHashTable.begin(); it!=vertexHashTable.end(); ++it) {
+    it->removeEdge(v);
+  }
+  */
 	return true;
 }
 
