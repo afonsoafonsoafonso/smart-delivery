@@ -299,13 +299,19 @@ void tests() {
 
   addVehicle(ds,"nenhuma");
   addVehicle(ds,"nenhuma");
-  //addVehicle(ds,"nenhuma");
+  addVehicle(ds,"nenhuma");
 
   addRequest(ds,Request<int>(1, 2, "nenhuma"));
   addRequest(ds,Request<int>(3, 4, "nenhuma"));
   addRequest(ds,Request<int>(5, 3, "nenhuma"));
   addRequest(ds,Request<int>(2, 5, "nenhuma"));
   addRequest(ds,Request<int>(4, 1, "nenhuma"));
+  addRequest(ds,Request<int>(7, 14, "nenhuma"));
+  addRequest(ds,Request<int>(6, 10, "nenhuma"));
+  addRequest(ds,Request<int>(11, 3, "nenhuma"));
+  addRequest(ds,Request<int>(2, 3, "nenhuma"));
+  addRequest(ds,Request<int>(0, 12, "nenhuma"));
+
 
   GraphViewer *gv = new GraphViewer(600, 600, false, true);
   generateOriginalGraphViewer(ds, gv);
