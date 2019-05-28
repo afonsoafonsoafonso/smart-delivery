@@ -131,6 +131,15 @@ template <class T> void showPaths(vector<Path<T>> v, GraphViewer *gv) {
   }
 }
 
+template <class T> void showPaths(vector<Path<T>> v) {
+  for (size_t i = 0; i < v.size(); i++) {
+    vector<T> path = v[i].path;
+    cout << v[i].specialty<<" : ";
+    showPath(path);
+    cout << endl;
+  }
+}
+
 template <class T> void showPath(vector<vector<T>> v) {
   for (size_t i = 0; i < v.size(); i++) {
     vector<T> path = v[i];
@@ -348,8 +357,8 @@ void tests() {
   //addRequest(ds,Request<int>(11, 14, "nenhuma"));
 
 
-  GraphViewer *gv = new GraphViewer(600, 600, false, true);
-  generateOriginalGraphViewer(ds, gv);
+  //GraphViewer *gv = new GraphViewer(600, 600, false, true);
+  //generateOriginalGraphViewer(ds, gv);
 
   ds.setRunByTime();
 
@@ -357,7 +366,7 @@ void tests() {
 
   //generateProcessedGraphViewer(ds, gv);
   //cout<<ds.getVehiclesCompletePath().size()<<endl;
-  showPaths(ds.getVehiclesCompletePaths(),gv);
+  showPaths(ds.getVehiclesCompletePaths());
   //showPath(ds.getVehiclesPath());
 
   getchar();
